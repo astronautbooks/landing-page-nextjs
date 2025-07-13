@@ -14,10 +14,22 @@ module.exports = {
         },
         'button-indigo': '#4F46E5',
         'promo-lilac': '#A855F7',
-        'price-lilac-light': '#F5F3FF',
-        'price-lilac-dark': '#6D28D9',
         'launch-green': '#10B981',
         'bestseller-amber': '#F59E0B',
+        'price-theme': {
+          lilac: {
+            light: '#EDE9FE',
+            dark: '#6D28D9',
+          },
+          green: {
+            light: '#D1FAE5',
+            dark: '#065F46',
+          },
+          amber: {
+            light: '#FEF3C7',
+            dark: '#B45309',
+          },
+        },
         purple: {
           500: '#9333ea',
         },

@@ -1,3 +1,6 @@
+import EbookCard from '@/components/EbookCard';
+import HeroImage from '@/components/HeroImage';
+
 export default function Home() {
   return (
     <main className="min-h-screen">
@@ -35,7 +38,11 @@ com nossos <span className="text-yellow-300">e-books premium</span></h1>
             </div>
           </div>
           <div className="md:w-1/2 flex justify-center">
-            <img src="https://placehold.co/600x400" alt="Pilha de livros digitais coloridos em um tablet moderno com detalhes em neon" className="rounded-lg shadow-xl w-full max-w-md" />
+            <HeroImage 
+              src="https://placehold.co/600x400" 
+              alt="Pilha de livros digitais coloridos em um tablet moderno com detalhes em neon" 
+              className="rounded-lg w-full max-w-md" 
+            />
           </div>
         </div>
       </section>
@@ -67,72 +74,48 @@ com nossos <span className="text-yellow-300">e-books premium</span></h1>
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Selecione o e-book que mais combina com seus objetivos e dê um upgrade no seu conhecimento.</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: 'Marketing Digital para Iniciantes',
-                description: 'Domine as técnicas essenciais de marketing digital e alavanque seus negócios.',
-                price: '39,90',
-                oldPrice: null,
-                rating: 4.9,
-                reviews: 287,
-                imageUrl: 'https://placehold.co/600x400',
-                badge: { text: 'BESTSELLER', color: 'bg-bestseller-amber' },
-                purchaseUrl: '#'
-              },
-              {
-                title: 'Finanças Pessoais Simplificadas',
-                description: 'Aprenda a controlar suas finanças, investir e construir riqueza de forma inteligente.',
-                price: '49,90',
-                oldPrice: null,
-                rating: 4.8,
-                reviews: 152,
-                imageUrl: 'https://placehold.co/600x400',
-                badge: { text: 'LANÇAMENTO', color: 'bg-launch-green' },
-                purchaseUrl: '#'
-              },
-              {
-                title: 'Produtividade Máxima',
-                description: 'Técnicas comprovadas para fazer mais em menos tempo e com menos estresse.',
-                price: '44,90',
-                oldPrice: '59,90',
-                rating: 4.7,
-                reviews: 310,
-                imageUrl: 'https://placehold.co/600x400',
-                badge: { text: 'PROMOÇÃO', color: 'bg-promo-lilac' },
-                purchaseUrl: '#'
-              }
-            ].map((ebook, index) => (
-              <div key={index} className="bg-white rounded-xl overflow-hidden shadow-md transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col">
-                <div className="relative">
-                  <img className="w-full h-48 object-cover" src={ebook.imageUrl} alt={`Capa do e-book ${ebook.title}`} />
-                  {ebook.badge && (
-                    <div className={`absolute top-4 right-4 text-white px-3 py-1 rounded-full text-sm font-medium ${ebook.badge.color}`}>{ebook.badge.text}</div>
-                  )}
-                </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-bold text-gray-800 flex-1 pr-4">{ebook.title}</h3>
-                    <div className="bg-price-lilac-light text-price-lilac-dark px-4 py-1 rounded-full font-bold text-lg whitespace-nowrap">
-                      {ebook.oldPrice && (
-                        <span className="line-through text-gray-400 font-normal mr-2">R$ {ebook.oldPrice}</span>
-                      )}
-                      R$ {ebook.price}
-                    </div>
-                  </div>
-                  <p className="text-gray-600 mb-4 flex-grow">{ebook.description}</p>
-                  <div className="flex justify-between items-center mt-auto">
-                    <div className="flex items-center text-gray-600">
-                      <svg className="w-5 h-5 text-yellow-500 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                      <span className="font-bold">{ebook.rating}</span>
-                      {ebook.reviews && <span className="ml-2">({ebook.reviews} reviews)</span>}
-                    </div>
-                    <a href={ebook.purchaseUrl} className="bg-button-indigo hover:bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold transition duration-300">
-                      Comprar
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {
+              [
+                {
+                  title: 'Marketing Digital para Iniciantes',
+                  description: 'Domine as técnicas essenciais de marketing digital e alavanque seus negócios.',
+                  price: 'R$ 39,90',
+                  oldPrice: null,
+                  rating: 5,
+                  reviews: 120,
+                  imageUrl: 'https://placehold.co/600x400',
+                  badge: { text: 'BESTSELLER', color: 'bg-bestseller-amber text-white' },
+                  priceTheme: { bg: 'bg-price-theme-amber-light', text: 'text-price-theme-amber-dark' },
+                  purchaseUrl: '#'
+                },
+                {
+                  title: 'Investidor Inteligente 2.0',
+                  description: 'Aprenda a investir na bolsa de valores com segurança e rentabilidade.',
+                  price: 'R$ 49,90',
+                  oldPrice: null,
+                  rating: 4,
+                  reviews: 95,
+                  imageUrl: 'https://placehold.co/600x400',
+                  badge: { text: 'LANÇAMENTO', color: 'bg-launch-green text-white' },
+                  priceTheme: { bg: 'bg-price-theme-green-light', text: 'text-price-theme-green-dark' },
+                  purchaseUrl: '#'
+                },
+                {
+                  title: 'Produtividade Máxima',
+                  description: 'Técnicas comprovadas para fazer mais em menos tempo e com menos estresse.',
+                  price: 'R$ 29,90',
+                  oldPrice: 'R$ 49,90',
+                  rating: 5,
+                  reviews: 210,
+                  imageUrl: 'https://placehold.co/600x400',
+                  badge: { text: 'PROMOÇÃO', color: 'bg-promo-lilac text-white' },
+                  priceTheme: { bg: 'bg-price-theme-lilac-light', text: 'text-price-theme-lilac-dark' },
+                  purchaseUrl: '#'
+                }
+              ].map((ebook, index) => (
+                <EbookCard key={index} ebook={ebook} />
+              ))
+            }
           </div>
         </div>
       </section>
