@@ -28,20 +28,21 @@ export default function Home() {
       {/* Seção Hero */}
             <section className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white py-20">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-10 md:mb-0">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Transforme seu conhecimento
-com nossos <span className="text-yellow-300">e-books premium</span></h1>
-            <p className="text-xl mb-8 opacity-90">Conteúdo exclusivo criado por especialistas para acelerar seu aprendizado e desenvolvimento pessoal.</p>
+          <div className="md:w-3/5 mb-10 md:mb-0">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">Dê Vida à Selva com Cores! O Livro de Colorir que <span className="text-yellow-300">Desperta a Criatividade</span></h1>
+            <p className="text-xl mb-8 opacity-90">Dezenas de desenhos encantadores, prontos para serem transformados em obras de arte pelos pequenos artistas.</p>
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-              <a href="#ebooks" className="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300 text-center shadow-lg">Comprar Agora</a>
-              <a href="#contato" className="border-2 border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white hover:bg-opacity-10 transition duration-300 text-center">Falar com Vendedor</a>
+              <a href="#ebooks" className="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300 text-center shadow-lg">Quero Colorir Agora!</a>
+              <a href="#contato" className="border-2 border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white hover:bg-opacity-10 transition duration-300 text-center">Baixar 3 Páginas Grátis</a>
             </div>
           </div>
-          <div className="md:w-1/2 flex justify-center">
+          <div className="md:w-2/5 flex justify-center items-center relative">
+            {/* Efeito de Glow */}
+            <div className="absolute w-96 h-96 bg-white bg-opacity-20 rounded-full blur-[100px] z-0"></div>
             <HeroImage 
-              src="https://placehold.co/600x400" 
-              alt="Pilha de livros digitais coloridos em um tablet moderno com detalhes em neon" 
-              className="rounded-lg w-full max-w-md" 
+              src="/cover-li-jungle.png" 
+              alt="Capa colorida do livro de colorir Living in the Jungle" 
+              className="rounded-lg h-96 w-auto relative z-10 border border-white border-opacity-75" 
             />
           </div>
         </div>
@@ -70,51 +71,58 @@ com nossos <span className="text-yellow-300">e-books premium</span></h1>
       {/* Seção E-books */}
       <section id="ebooks" className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-4">Nossos <span className="text-indigo-600">E-books</span> em Destaque</h2>
-          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Selecione o e-book que mais combina com seus objetivos e dê um upgrade no seu conhecimento.</p>
+          <h2 className="text-3xl font-bold text-center mb-4">Veja o Livro por <span className="text-indigo-600">Dentro</span></h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Escolha a melhor opção para você e comece a colorir hoje mesmo.</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {
-              [
-                {
-                  title: 'Marketing Digital para Iniciantes',
-                  description: 'Domine as técnicas essenciais de marketing digital e alavanque seus negócios.',
-                  price: 'R$ 39,90',
-                  oldPrice: null,
-                  rating: 5,
-                  reviews: 120,
-                  imageUrl: 'https://placehold.co/600x400',
-                  badge: { text: 'BESTSELLER', color: 'bg-bestseller-amber text-white' },
-                  priceTheme: { bg: 'bg-price-theme-amber-light', text: 'text-price-theme-amber-dark' },
-                  purchaseUrl: '#'
-                },
-                {
-                  title: 'Investidor Inteligente 2.0',
-                  description: 'Aprenda a investir na bolsa de valores com segurança e rentabilidade.',
-                  price: 'R$ 49,90',
-                  oldPrice: null,
-                  rating: 4,
-                  reviews: 95,
-                  imageUrl: 'https://placehold.co/600x400',
-                  badge: { text: 'LANÇAMENTO', color: 'bg-launch-green text-white' },
-                  priceTheme: { bg: 'bg-price-theme-green-light', text: 'text-price-theme-green-dark' },
-                  purchaseUrl: '#'
-                },
-                {
-                  title: 'Produtividade Máxima',
-                  description: 'Técnicas comprovadas para fazer mais em menos tempo e com menos estresse.',
-                  price: 'R$ 29,90',
-                  oldPrice: 'R$ 49,90',
-                  rating: 5,
-                  reviews: 210,
-                  imageUrl: 'https://placehold.co/600x400',
-                  badge: { text: 'PROMOÇÃO', color: 'bg-promo-lilac text-white' },
-                  priceTheme: { bg: 'bg-price-theme-lilac-light', text: 'text-price-theme-lilac-dark' },
-                  purchaseUrl: '#'
-                }
-              ].map((ebook, index) => (
-                <EbookCard key={index} ebook={ebook} />
-              ))
+              (() => {
+                const ebooks = [
+                  {
+                    id: 1,
+                    title: 'Livro de Colorir: Selva Mágica',
+                    description: 'Acesso imediato a todas as páginas. Horas de diversão garantida!',
+                    imageUrl: '/buy-book.png',
+                    price: 'R$ 29,90',
+                    oldPrice: 'R$ 49,90',
+                    reviews: 150,
+                    rating: 5,
+                    badge: 'COMPLETO',
+                    badgeTheme: { bg: 'bg-yellow-400', text: 'text-yellow-900' },
+                    priceTheme: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+                    purchaseUrl: '#',
+                  },
+                  {
+                    id: 2,
+                    title: 'Amostra Grátis para Testar',
+                    description: 'Baixe 3 páginas selecionadas e comece a colorir agora mesmo, sem custo!',
+                    imageUrl: '/sample-book.png',
+                    price: 'GRÁTIS',
+                    reviews: 78,
+                    rating: 5,
+                    badge: 'AMOSTRA',
+                    badgeTheme: { bg: 'bg-green-400', text: 'text-green-900' },
+                    priceTheme: { bg: 'bg-green-100', text: 'text-green-800' },
+                    purchaseUrl: '#',
+                  },
+                  {
+                    id: 3,
+                    title: 'Conheça os Animais',
+                    description: 'De leões a tucanos, explore todos os animais fofinhos que esperam para serem coloridos.',
+                    imageUrl: '/gallery-book.png',
+                    price: 'Ver Galeria',
+                    reviews: 0,
+                    rating: 0,
+                    badge: 'GALERIA',
+                    badgeTheme: { bg: 'bg-purple-400', text: 'text-purple-900' },
+                    priceTheme: { bg: 'bg-purple-100', text: 'text-purple-800' },
+                    purchaseUrl: '#',
+                  },
+                ];
+                return ebooks.map((ebook, index) => (
+                  <EbookCard key={index} ebook={ebook} />
+                ));
+              })()
             }
           </div>
         </div>
@@ -130,42 +138,42 @@ com nossos <span className="text-yellow-300">e-books premium</span></h1>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                title: 'Acesso Imediato',
-                description: 'Baixe seus e-books em segundos após a compra.',
+                title: 'Estimula a Criatividade',
+                description: 'Páginas que inspiram a imaginação e a expressão artística.',
                 icon: (
                   <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                  </svg>
-                ),
-                color: 'text-indigo-500'
-              },
-              {
-                title: 'Formatos Múltiplos',
-                description: 'Disponível em PDF, EPUB e MOBI para todos os dispositivos.',
-                icon: (
-                  <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M15 3v4M13 5h4M9 17v4M7 19h4M19 17v4M17 19h4M9 3a2 2 0 00-2 2v1.28a1 1 0 00.52.88l4.96 2.48a1 1 0 00.96 0l4.96-2.48A1 1 0 0017 6.28V5a2 2 0 00-2-2H9z"/>
                   </svg>
                 ),
                 color: 'text-purple-500'
               },
               {
-                title: 'Atualizações Gratuitas',
-                description: 'Receba atualizações do conteúdo sem custo adicional.',
+                title: 'Desenvolve a Coordenação',
+                description: 'Ajuda a aprimorar a coordenação motora fina de forma divertida.',
                 icon: (
                   <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L15.232 5.232z"/>
+                  </svg>
+                ),
+                color: 'text-indigo-500'
+              },
+              {
+                title: 'Impressão Ilimitada',
+                description: 'Imprima suas páginas favoritas quantas vezes quiser.',
+                icon: (
+                  <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                   </svg>
                 ),
                 color: 'text-green-500'
               }
-            ].map((benefit, index) => (
+            ].map((beneficio, index) => (
               <div key={index} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-center">
-                <div className={`inline-block ${benefit.color} mb-4`}>
-                  {benefit.icon}
+                <div className={`inline-block ${beneficio.color} mb-4`}>
+                  {beneficio.icon}
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-gray-800">{benefit.title}</h3>
-                <p className="text-gray-600">{benefit.description}</p>
+                <h3 className="text-xl font-bold mb-2 text-gray-800">{beneficio.title}</h3>
+                <p className="text-gray-600">{beneficio.description}</p>
               </div>
             ))}
           </div>

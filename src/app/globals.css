@@ -3,10 +3,15 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --font-montserrat: 'Montserrat', sans-serif;
+  }
+
   body {
     @apply antialiased bg-gray-50 text-gray-900;
     font-family: var(--font-montserrat);
   }
+
 }
 
 @keyframes float {

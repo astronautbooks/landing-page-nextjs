@@ -13,7 +13,7 @@ export default function EbookCard({ ebook }) {
 
   return (
     <div 
-      className="bg-white rounded-xl overflow-hidden flex flex-col"
+      className="bg-white rounded-xl overflow-hidden flex flex-col border border-slate-200"
       style={cardStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -39,14 +39,23 @@ export default function EbookCard({ ebook }) {
           </div>
           <span className="text-xs text-gray-500 ml-2">{ebook.reviews} reviews</span>
         </div>
-        <div className="flex justify-between items-center">
-          <div className={`text-lg font-bold px-3 py-1 rounded-full ${ebook.priceTheme.bg} ${ebook.priceTheme.text}`}>
-            {ebook.oldPrice && <span className="text-sm line-through opacity-70 mr-2">{ebook.oldPrice}</span>}
-            {ebook.price}
-          </div>
-          <a href={ebook.purchaseUrl} className="bg-button-indigo text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">
-            Comprar
-          </a>
+        <div className={`mt-auto pt-4 flex items-center ${ebook.price === 'Ver Galeria' ? 'justify-end' : 'justify-between'}`}>
+          {ebook.price === 'Ver Galeria' ? (
+            <a href={ebook.purchaseUrl} className="bg-button-indigo text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Ver Galeria</a>
+          ) : (
+            <>
+              <div className={`text-lg font-bold px-3 py-1 rounded-full ${ebook.priceTheme.bg} ${ebook.priceTheme.text}`}>
+                {ebook.oldPrice && <span className="text-sm line-through opacity-70 mr-2">{ebook.oldPrice}</span>}
+                {ebook.price}
+              </div>
+              <a 
+                href={ebook.purchaseUrl} 
+                className="bg-button-indigo text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                {ebook.price === 'GRÁTIS' ? 'Baixar Agora' : 'Comprar Agora'}
+              </a>
+            </>
+          )}
         </div>
       </div>
     </div>
