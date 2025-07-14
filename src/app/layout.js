@@ -1,12 +1,17 @@
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 
-console.log("globals.css imported");
-
+// Configuração da fonte Montserrat
 const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-montserrat",
+  weight: ['300', '400', '500', '600', '700', '800'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-montserrat',
 });
+
+// Garante que a variável de fonte seja acessível globalmente
+const fontClass = montserrat.variable;
 
 export const metadata = {
   title: "LeiaMais - E-books Premium",
@@ -15,7 +20,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pt-BR" className={montserrat.variable}>
+    <html lang="pt-BR" className={`${fontClass} font-sans`}>
       <body className="antialiased">
         {children}
       </body>

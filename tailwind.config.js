@@ -1,9 +1,14 @@
 /** @type {import('tailwindcss').Config} */
+// The Montserrat font is managed via next/font in layout.js.
+// The --font-montserrat variable is set automatically by Next.js.
 module.exports = {
   content: [
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    fontFamily: {
+      sans: ['var(--font-montserrat)', 'system-ui', '-apple-system', 'sans-serif'],
+    },
     extend: {
       colors: {
         indigo: {

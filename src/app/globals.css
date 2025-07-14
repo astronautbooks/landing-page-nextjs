@@ -4,14 +4,29 @@
 
 @layer base {
   :root {
-    --font-montserrat: 'Montserrat', sans-serif;
+    /* The --font-montserrat variable is set by next/font in layout.js. Do not override it here. */
   }
 
+  /* Base styles for the document body */
   body {
     @apply antialiased bg-gray-50 text-gray-900;
-    font-family: var(--font-montserrat);
+    font-family: var(--font-montserrat), system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1, 'pnum' 1, 'tnum' 0, 'onum' 1, 'ss01' 1, 'zero' 0;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Estilos para cabeçalhos */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight leading-tight;
+    font-family: var(--font-montserrat), system-ui, -apple-system, sans-serif;
+  }
+
+  /* Melhorias na tipografia */
+  p, a, li, button, input, textarea, select {
+    font-family: inherit;
+  }
 }
 
 @keyframes float {
