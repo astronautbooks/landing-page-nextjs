@@ -1,6 +1,9 @@
 import EbookCard from '@/components/EbookCard';
 import HeroImage from '@/components/HeroImage';
 import Carousel from './components/Carousel';
+import books from './booksData';
+import BookCard from './components/BookCard';
+import BookPromoCard from './components/BookPromoCard';
 
 export default function Home() {
   return (
@@ -72,62 +75,20 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Seção E-books */}
+      {/* Seção E-books - Novo grid de livros dinâmico */}
       <section id="ebooks" className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-4">Veja o Livro por <span className="text-indigo-600">Dentro</span></h2>
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Escolha a melhor opção para você e comece a colorir hoje mesmo.</p>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {
-              (() => {
-                const ebooks = [
-                  {
-                    id: 1,
-                    title: 'Livro de Colorir: Selva Mágica',
-                    description: 'Acesso imediato a todas as páginas. Horas de diversão garantida!',
-                    imageUrl: '/buy-book.png',
-                    price: 'R$ 29,90',
-                    oldPrice: 'R$ 49,90',
-                    reviews: 150,
-                    rating: 5,
-                    badge: 'COMPLETO',
-                    badgeTheme: { bg: 'bg-yellow-400', text: 'text-yellow-900' },
-                    priceTheme: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
-                    purchaseUrl: '#',
-                  },
-                  {
-                    id: 2,
-                    title: 'Amostra Grátis para Testar',
-                    description: 'Baixe 3 páginas selecionadas e comece a colorir agora mesmo, sem custo!',
-                    imageUrl: '/sample-book.png',
-                    price: 'GRÁTIS',
-                    reviews: 78,
-                    rating: 5,
-                    badge: 'AMOSTRA',
-                    badgeTheme: { bg: 'bg-green-400', text: 'text-green-900' },
-                    priceTheme: { bg: 'bg-green-100', text: 'text-green-800' },
-                    purchaseUrl: '#',
-                  },
-                  {
-                    id: 3,
-                    title: 'Conheça os Animais',
-                    description: 'De leões a tucanos, explore todos os animais fofinhos que esperam para serem coloridos.',
-                    imageUrl: '/gallery-book.png',
-                    price: 'Ver Galeria',
-                    reviews: 0,
-                    rating: 0,
-                    badge: 'GALERIA',
-                    badgeTheme: { bg: 'bg-purple-400', text: 'text-purple-900' },
-                    priceTheme: { bg: 'bg-purple-100', text: 'text-purple-800' },
-                    purchaseUrl: '#',
-                  },
-                ];
-                return ebooks.map((ebook, index) => (
-                  <EbookCard key={index} ebook={ebook} />
-                ));
-              })()
-            }
+            {books.map((book, idx) => {
+              if (book.isPromo) {
+                // Pega as capas dos três primeiros livros não promocionais
+                const covers = books.filter(b => !b.isPromo).map(b => `${b.path}/${b.cover}`);
+                return <BookPromoCard key={book.title + idx} promo={book} covers={covers} />;
+              }
+              return <BookCard key={book.title + idx} book={book} />;
+            })}
           </div>
         </div>
       </section>
