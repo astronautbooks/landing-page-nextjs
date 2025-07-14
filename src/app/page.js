@@ -1,5 +1,6 @@
 import EbookCard from '@/components/EbookCard';
 import HeroImage from '@/components/HeroImage';
+import Carousel from './components/Carousel';
 
 export default function Home() {
   return (
@@ -8,8 +9,7 @@ export default function Home() {
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
-            <img src="/images/logo.png" alt="Astronaut Logo" className="h-12 w-auto mr-2" />
-            <span className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full ml-2">ONLINE</span>
+            <img src="/images/logo.png" alt="Astronaut Logo" className="h-16 w-auto mr-2" />
           </div>
           <nav className="hidden md:flex space-x-8">
             <a href="#ebooks" className="text-gray-600 hover:text-indigo-600 font-medium">E-books</a>
@@ -39,10 +39,14 @@ export default function Home() {
           <div className="md:w-2/5 flex justify-center items-center relative">
             {/* Efeito de Glow */}
             <div className="absolute w-96 h-96 bg-white bg-opacity-20 rounded-full blur-[100px] z-0"></div>
-            <HeroImage 
-              src="/images/living-in-the-jungle/cover.png" 
-              alt="Capa colorida do livro de colorir Living in the Jungle" 
-              className="rounded-lg h-96 w-auto relative z-10 border border-white border-opacity-75" 
+            {/* Carousel with book covers in Hero Section */}
+            <Carousel
+              images={[
+                { src: '/images/living-in-the-jungle/cover.png', alt: 'Living in the Jungle Book Cover' },
+                { src: '/images/living-in-the-jurassic/cover.png', alt: 'Living in the Jurassic Book Cover' },
+                { src: '/images/living-in-the-sea/cover.png', alt: 'Living in the Sea Book Cover' },
+              ]}
+              extraClassName="rounded-lg h-96 w-auto relative z-10 border border-white border-opacity-75"
             />
           </div>
         </div>
