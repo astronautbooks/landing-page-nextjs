@@ -14,8 +14,8 @@ export default function Carousel({ images, extraClassName = "" }) {
   const total = images.length;
 
   // Fixed dimensions based on the first image (h-96 = 384px)
-  const fixedWidth = 480; // px
-  const fixedHeight = 640; // px
+  const fixedWidth = 360; // px
+  const fixedHeight = 448; // px
 
   const goToPrev = () => setCurrent((prev) => (prev === 0 ? total - 1 : prev - 1));
   const goToNext = () => setCurrent((prev) => (prev === total - 1 ? 0 : prev + 1));
