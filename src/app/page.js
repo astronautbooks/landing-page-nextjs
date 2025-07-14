@@ -8,7 +8,7 @@ export default function Home() {
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
-            <div className="text-indigo-600 font-bold text-3xl mr-2">Leia<span className="text-purple-500">Mais</span></div>
+            <img src="/images/logo.png" alt="Astronaut Logo" className="h-12 w-auto mr-2" />
             <span className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full ml-2">ONLINE</span>
           </div>
           <nav className="hidden md:flex space-x-8">
