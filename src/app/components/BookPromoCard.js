@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useStripeCheckout } from "../hooks/useStripeCheckout";
+import { useMercadoPagoCheckout } from "../hooks/useMercadoPagoCheckout";
 import books from "../booksData";
 
 /**
@@ -10,7 +11,10 @@ import books from "../booksData";
  * - covers: array de paths das capas dos livros
  */
 export default function BookPromoCard({ promo, covers }) {
-  const { handleBuy, loading } = useStripeCheckout();
+  // const { handleBuy, loading } = useStripeCheckout(); // Ocultando Stripe
+  const { handleMpBuy, loading: mpLoading } = useMercadoPagoCheckout();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:8888";
+  const picture_url = `${siteUrl}/images/collection-thumb.png`;
 
   return (
     <div className="bg-gradient-to-br from-yellow-100 to-purple-100 rounded-xl shadow-lg p-6 flex flex-col items-center w-full mx-auto border-2 border-yellow-300">
@@ -46,13 +50,13 @@ export default function BookPromoCard({ promo, covers }) {
           <span className="text-gray-400 line-through text-lg">R$ {promo.oldPrice.toFixed(2)}</span>
         )}
       </div>
-      {/* Botão de compra */}
+      {/* Botão de compra Mercado Pago only */}
       <button
-        className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 transition shadow disabled:opacity-60 disabled:cursor-not-allowed"
-        onClick={() => handleBuy(promo.priceId)}
-        disabled={loading}
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
+        onClick={() => handleMpBuy({ title: promo.title, price: promo.price, picture_url })}
+        disabled={mpLoading}
       >
-        {loading ? "Processando..." : "Comprar Coleção"}
+        {mpLoading ? "Processando..." : "Comprar Coleção"}
       </button>
     </div>
   );
