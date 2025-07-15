@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useStripeCheckout } from "../hooks/useStripeCheckout";
 import books from "../booksData";
 
 /**
@@ -9,6 +10,8 @@ import books from "../booksData";
  * - covers: array de paths das capas dos livros
  */
 export default function BookPromoCard({ promo, covers }) {
+  const { handleBuy, loading } = useStripeCheckout();
+
   return (
     <div className="bg-gradient-to-br from-yellow-100 to-purple-100 rounded-xl shadow-lg p-6 flex flex-col items-center w-full mx-auto border-2 border-yellow-300">
       {/* Deck de capas */}
@@ -45,10 +48,11 @@ export default function BookPromoCard({ promo, covers }) {
       </div>
       {/* Botão de compra */}
       <button
-        className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 transition shadow"
-        disabled
+        className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 transition shadow disabled:opacity-60 disabled:cursor-not-allowed"
+        onClick={() => handleBuy(promo.priceId)}
+        disabled={loading}
       >
-        Comprar Coleção
+        {loading ? "Processando..." : "Comprar Coleção"}
       </button>
     </div>
   );

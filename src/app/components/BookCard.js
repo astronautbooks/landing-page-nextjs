@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useStripeCheckout } from "../hooks/useStripeCheckout";
 
 /**
  * BookCard component displays a book with a main image, thumbnails, price and buy button.
@@ -19,40 +20,10 @@ export default function BookCard({ book }) {
   // Array of all images (cover + pages)
   const images = [book.cover, book.page1, book.page2];
   const [selected, setSelected] = useState(0); // 0 = cover
-  const [loading, setLoading] = useState(false); // Loading state for buy button
+  const { handleBuy, loading } = useStripeCheckout();
 
   // Helper to get full image path
   const getImgPath = (img) => `${book.path}/${img}`;
-
-  // Handler for Stripe Checkout
-  const handleBuy = async () => {
-    setLoading(true);
-    try {
-      // Call Netlify function to create checkout session
-      const response = await fetch("/.netlify/functions/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ priceId: book.priceId })
-      });
-      if (!response.ok) {
-        throw new Error("Failed to create checkout session");
-      }
-      const data = await response.json();
-      if (data.url) {
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      } else {
-        throw new Error("No checkout URL returned");
-      }
-    } catch (error) {
-      alert("Erro ao iniciar o checkout. Tente novamente.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center w-full mx-auto border border-gray-200">
@@ -93,7 +64,7 @@ export default function BookCard({ book }) {
       {/* Buy button */}
       <button
         className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 transition shadow disabled:opacity-60 disabled:cursor-not-allowed"
-        onClick={handleBuy}
+        onClick={() => handleBuy(book.priceId)}
         disabled={loading}
       >
         {loading ? "Processando..." : "Comprar Agora"}
