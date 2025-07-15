@@ -1,7 +1,7 @@
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 
-// Configuração da fonte Montserrat
+// Montserrat font configuration
 const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ['300', '400', '500', '600', '700', '800'],
@@ -10,7 +10,7 @@ const montserrat = Montserrat({
   variable: '--font-montserrat',
 });
 
-// Garante que a variável de fonte seja acessível globalmente
+// Ensures the font variable is globally accessible
 const fontClass = montserrat.variable;
 
 export const metadata = {

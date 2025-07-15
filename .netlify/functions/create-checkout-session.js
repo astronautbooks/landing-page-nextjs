@@ -3,25 +3,22 @@ const success_url = process.env.STRIPE_SUCCESS_URL;
 const cancel_url = process.env.STRIPE_CANCEL_URL;
 
 exports.handler = async (event) => {
-  const { price, title } = JSON.parse(event.body);
+  // Parse priceId from request body
+  const { priceId } = JSON.parse(event.body);
 
+  // Create Stripe Checkout session using the priceId
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     line_items: [
       {
-        price_data: {
-          currency: 'brl',
-          product_data: {
-            name: title,
-          },
-          unit_amount: Math.round(price * 100), // preço em centavos
-        },
+        price: priceId,
         quantity: 1,
       },
     ],
     mode: 'payment',
     success_url,
     cancel_url,
+    locale: 'pt-BR', // Força o idioma do checkout para português brasileiro
   });
 
   return {

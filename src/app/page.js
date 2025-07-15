@@ -8,7 +8,7 @@ import BookPromoCard from './components/BookPromoCard';
 export default function Home() {
   return (
     <main className="min-h-screen">
-      {/* Cabeçalho */}
+      {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
@@ -28,7 +28,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Seção Hero */}
+      {/* Hero Section */}
             <section className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white py-20">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
           <div className="md:w-3/5 mb-10 md:mb-0">
@@ -54,7 +54,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contador de Vendas */}
+      {/* Sales Counter */}
       <div className="bg-indigo-50 py-6">
         <div className="container mx-auto px-4 text-center">
           <div className="flex justify-center space-x-4 md:space-x-12">
@@ -74,7 +74,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Seção E-books - Novo grid de livros dinâmico */}
+      {/* E-books Section - New dynamic book grid */}
       <section id="ebooks" className="py-20 bg-white scroll-mt-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-4">Veja o Livro por <span className="text-indigo-600">Dentro</span></h2>
@@ -92,7 +92,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Seção Benefícios */}
+      {/* Benefits Section */}
       <section id="beneficios" className="py-20 bg-gray-50 scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -155,7 +155,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Seção Depoimentos */}
+      {/* Testimonials Section */}
       <section id="depoimentos" className="py-20 bg-white scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -192,7 +192,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Seção Contato */}
+      {/* Contact Section */}
       <section id="contato" className="py-20 bg-gray-50 scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">

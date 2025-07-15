@@ -17,13 +17,13 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Estilos para cabeçalhos */
+  /* Styles for headings */
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold tracking-tight leading-tight;
     font-family: var(--font-montserrat), system-ui, -apple-system, sans-serif;
   }
 
-  /* Melhorias na tipografia */
+  /* Typography improvements */
   p, a, li, button, input, textarea, select {
     font-family: inherit;
   }

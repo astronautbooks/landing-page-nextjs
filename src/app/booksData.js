@@ -9,6 +9,7 @@ const books = [
     page1: "page1.png",
     page2: "page2.png",
     price: 9.99,
+    priceId: "price_1Rl9ljRvwTjuH3N1gRi5Z5Je",
     isPromo: false
   },
   {
@@ -18,6 +19,7 @@ const books = [
     page1: "page1.png",
     page2: "page2.png",
     price: 9.99,
+    priceId: "price_1RlA2MRvwTjuH3N1YDoNEHAh",
     isPromo: false
   },
   {
@@ -28,12 +30,14 @@ const books = [
     page2: "page2.png",
     price: 7.99,
     oldPrice: 9.99,
+    priceId: "price_1RlA1vRvwTjuH3N1z8PA2uXR",
     isPromo: false
   },
   {
     title: "Compre os 3 livros!",
     price: 18.98,
     oldPrice: 29.97,
+    priceId: "price_1RlA3ZRvwTjuH3N1SbzBWJig",
     isPromo: true
   }
 ];
