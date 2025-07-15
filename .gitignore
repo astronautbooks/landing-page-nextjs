@@ -40,5 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Local Netlify folder
-.netlify
+# Ignora tudo em .netlify
+.netlify/*
+
+# Mas NÃO ignora a pasta de funções e seus arquivos
+!.netlify/functions/
+!.netlify/functions/**
