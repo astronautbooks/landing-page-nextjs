@@ -36,7 +36,6 @@ export default function Home() {
             <p className="text-xl mb-8 opacity-90">Dezenas de desenhos encantadores, prontos para serem transformados em obras de arte pelos pequenos artistas.</p>
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
               <a href="#ebooks" className="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300 text-center shadow-lg">Quero Colorir Agora!</a>
-              <a href="#contato" className="border-2 border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white hover:bg-opacity-10 transition duration-300 text-center">Baixar 3 Páginas Grátis</a>
             </div>
           </div>
           <div className="md:w-2/5 flex justify-center items-center relative">
@@ -68,15 +67,15 @@ export default function Home() {
               <div className="text-gray-600">Satisfação dos Clientes</div>
             </div>
             <div className="text-center">
-              <div className="text-indigo-600 font-bold text-3xl mb-2">24h</div>
-              <div className="text-gray-600">Entrega Imediata</div>
+              <div className="text-indigo-600 font-bold text-3xl mb-2">100% Digital</div>
+              <div className="text-gray-600">Sem Frete, Sem Espera</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Seção E-books - Novo grid de livros dinâmico */}
-      <section id="ebooks" className="py-20 bg-white">
+      <section id="ebooks" className="py-20 bg-white scroll-mt-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-4">Veja o Livro por <span className="text-indigo-600">Dentro</span></h2>
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Escolha a melhor opção para você e comece a colorir hoje mesmo.</p>
@@ -94,13 +93,13 @@ export default function Home() {
       </section>
 
       {/* Seção Benefícios */}
-      <section id="beneficios" className="py-20 bg-gray-50">
+      <section id="beneficios" className="py-20 bg-gray-50 scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Por que escolher nossos e-books?</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">Benefícios exclusivos que vão transformar sua experiência de aprendizado.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
                 title: 'Estimula a Criatividade',
@@ -131,9 +130,20 @@ export default function Home() {
                   </svg>
                 ),
                 color: 'text-green-500'
+              },
+              {
+                title: 'Pagamento Seguro',
+                description: 'Suas compras protegidas com Stripe, a plataforma líder mundial em pagamentos online.',
+                icon: (
+                  <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="3" y="11" width="18" height="10" rx="2" strokeWidth="2" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 11V7a5 5 0 0110 0v4" />
+                  </svg>
+                ),
+                color: 'text-yellow-500'
               }
             ].map((beneficio, index) => (
-              <div key={index} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-center">
+              <div key={index} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-center border border-gray-200">
                 <div className={`inline-block ${beneficio.color} mb-4`}>
                   {beneficio.icon}
                 </div>
@@ -146,7 +156,7 @@ export default function Home() {
       </section>
 
       {/* Seção Depoimentos */}
-      <section id="depoimentos" className="py-20 bg-white">
+      <section id="depoimentos" className="py-20 bg-white scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">O que nossos clientes dizem</h2>
@@ -158,7 +168,7 @@ export default function Home() {
                 name: 'Maria Silva',
                 role: 'Empreendedora',
                 avatarUrl: 'https://placehold.co/40x40',
-                quote: 'Os e-books da LeiaMais foram fundamentais para o meu negócio. O conteúdo prático e atualizado me ajudou a tomar decisões mais assertivas.'
+                quote: 'Os e-books da Astronaut foram fundamentais para o meu negócio. O conteúdo prático e atualizado me ajudou a tomar decisões mais assertivas.'
               },
               {
                 name: 'João Oliveira',
@@ -182,82 +192,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Seção Planos */}
-      <section id="planos" className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Escolha seu plano</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Planos flexíveis para atender todas as suas necessidades.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                name: 'Básico',
-                price: '29,90',
-                period: '/mês',
-                features: ['5 e-books por mês', 'Suporte básico', 'Atualizações mensais'],
-                buttonText: 'Escolher Plano',
-                buttonColor: 'bg-indigo-600 hover:bg-indigo-700',
-                priceColor: 'text-indigo-600',
-                isFeatured: false
-              },
-              {
-                name: 'Premium',
-                price: '49,90',
-                period: '/mês',
-                features: ['Acesso ilimitado', 'Suporte prioritário', 'Atualizações semanais', 'Conteúdo exclusivo'],
-                buttonText: 'Escolher Plano',
-                buttonColor: 'bg-purple-600 hover:bg-purple-700',
-                priceColor: 'text-purple-600',
-                isFeatured: true
-              },
-              {
-                name: 'Empresarial',
-                price: '149,90',
-                period: '/mês',
-                features: ['Acesso em equipe', 'Suporte 24/7 dedicado', 'Relatórios de progresso', 'Integrações customizadas'],
-                buttonText: 'Entre em Contato',
-                buttonColor: 'bg-gray-800 hover:bg-gray-900',
-                priceColor: 'text-gray-800',
-                isFeatured: false
-              }
-            ].map((plan, index) => (
-              <div key={index} className={`bg-white rounded-xl shadow-md hover:shadow-lg transition duration-300 flex flex-col ${plan.isFeatured ? 'border-2 border-purple-600' : ''}`}>
-                <div className="p-8 flex-grow">
-                  <h3 className="text-2xl font-bold text-center mb-4 text-gray-800">{plan.name}</h3>
-                  <div className={`text-5xl font-bold text-center ${plan.priceColor} mb-6`}>
-                    <span className="text-3xl align-top">R$</span>{plan.price}
-                    <span className="text-lg text-gray-600 font-medium">{plan.period}</span>
-                  </div>
-                  <ul className="space-y-4 text-gray-600 mb-8">
-                    {plan.features.map((feature, fIndex) => (
-                      <li key={fIndex} className="flex items-center">
-                        <svg className="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="p-8 pt-0">
-                   <a href="#contato" className={`block w-full text-center py-3 px-4 text-white rounded-lg transition duration-300 ${plan.buttonColor}`}>{plan.buttonText}</a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Seção Contato */}
-      <section id="contato" className="py-20 bg-white">
+      <section id="contato" className="py-20 bg-gray-50 scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Entre em contato</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">Fale conosco e descubra como podemos ajudar você.</p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            <div className="bg-gray-50 p-8 rounded-xl shadow-md">
+            <div className="bg-gray-50 p-8 rounded-xl shadow-md border border-gray-200">
               <form className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nome</label>
@@ -276,7 +219,7 @@ export default function Home() {
                 </button>
               </form>
             </div>
-            <div className="bg-gray-50 p-8 rounded-xl shadow-md">
+            <div className="bg-gray-50 p-8 rounded-xl shadow-md border border-gray-200">
               <div className="space-y-8">
                 <div className="flex items-start">
                   <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mr-4 flex-shrink-0">
@@ -302,7 +245,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-800">E-mail</h4>
-                    <p className="text-gray-600">contato@leiamais.com</p>
+                    <p className="text-gray-600">astronaut@gmail.com</p>
                   </div>
                 </div>
               </div>
@@ -316,7 +259,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4">LeiaMais</h3>
+              <h3 className="text-xl font-bold mb-4">Astronaut</h3>
               <p className="text-gray-400">Transforme seu conhecimento com nossos e-books premium.</p>
             </div>
             <div>
@@ -346,7 +289,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-            <p className="text-gray-400">&copy; 2024 LeiaMais. Todos os direitos reservados.</p>
+            <p className="text-gray-400">&copy; 2025 Astronaut. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
