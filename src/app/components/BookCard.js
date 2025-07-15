@@ -23,7 +23,7 @@ export default function BookCard({ book }) {
   const getImgPath = (img) => `${book.path}/${img}`;
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center w-full mx-auto">
+    <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center w-full mx-auto border border-gray-200">
       {/* Main image */}
       <img
         src={getImgPath(images[selected])}
