@@ -30,7 +30,7 @@ export default function BookCard({ book }) {
   const getImgPath = (img) => `${book.path}/${img}`;
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-4 flex flex-col items-center w-80 h-full border border-gray-200">
+    <div className="bg-white rounded-xl shadow-[0_4px_24px_rgba(67,56,202,0.12)] p-4 flex flex-col items-center w-80 h-full border border-gray-200">
       {/* Main image */}
       <img
         src={getImgPath(images[selected])}
@@ -77,7 +77,7 @@ export default function BookCard({ book }) {
       </div>
       {/* Buy button Mercado Pago only */}
       <button
-        className="bg-indigo-700 text-white px-6 py-2 rounded-full font-bold text-lg hover:bg-[#3730a3] transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
+        className="bg-indigo-700 text-white px-6 py-2 rounded-md font-bold text-lg hover:bg-[#3730a3] transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
         style={{}}
         onClick={() => handleBuy(book.priceId)}
         disabled={loading}

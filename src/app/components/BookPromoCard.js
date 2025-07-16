@@ -17,12 +17,12 @@ export default function BookPromoCard({ promo, covers }) {
   const picture_url = `${siteUrl}/images/collection-thumb.png`;
 
   return (
-    <div className="bg-yellow-50 border border-yellow-300 rounded-xl py-4 px-4 flex flex-col h-full w-80 relative">
+    <div className="bg-gray-200 shadow-[0_4px_24px_rgba(67,56,202,0.12)] border-2 border-purple-300 rounded-xl py-4 px-4 flex flex-col h-full w-80 relative">
       <div className="flex flex-col gap-y-4 flex-1 items-center justify-center">
         {/* Badge de promoção */}
-        <span className="absolute top-4 right-4 bg-yellow-300 text-yellow-900 text-sm font-bold px-4 py-1 rounded-full shadow z-10">Promoção</span>
+        <span className="absolute top-4 right-4 bg-green-500 text-white text-sm font-bold px-4 py-1 rounded-full z-10">Promoção</span>
         {/* Deck de capas */}
-        <div className="flex items-end justify-center relative h-48">
+        <div className="flex items-end justify-center relative h-48 mt-10">
           <img
             src={covers[0]}
             alt="Capa 1"
@@ -45,23 +45,51 @@ export default function BookPromoCard({ promo, covers }) {
         {/* Título */}
         <div className="font-extrabold text-lg text-center text-purple-800 drop-shadow">{promo.title}</div>
 
-        {/* Preço promocional */}
-        <div className="flex items-end justify-center">
-          <span className="bg-yellow-200 text-yellow-900 font-bold px-4 py-2 rounded-full text-lg mr-2 shadow">
-            R$ {promo.price.toFixed(2)}
-          </span>
+        {/* Preço promocional (pill igual ao BookCard) */}
+        <div className="flex items-center justify-center mb-4">
+          {/* <div className="bg-yellow-200 text-yellow-900 rounded-full px-4 py-1 flex items-baseline shadow border border-yellow-300"> */}
+            {(() => {
+              const priceStr = promo.price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              const lastComma = priceStr.lastIndexOf(',');
+              const inteiros = priceStr.substring(0, lastComma);
+              const centavos = priceStr.substring(lastComma + 1);
+              return (
+                <span className="flex items-baseline justify-center">
+                  <span className="text-xs font-normal relative -top-2 mr-0.5" style={{ letterSpacing: '-0.5px' }}>R$</span>
+                  <span className="text-2xl font-extrabold leading-none">{inteiros}</span>
+                  <span className="text-2xl font-extrabold leading-none">,</span>
+                  <span className="text-xs font-bold ml-0.5" style={{ lineHeight: '1.1' }}>{centavos}</span>
+                </span>
+              )
+            })()}
+          {/* </div> */}
           {promo.oldPrice && (
-            <span className="text-gray-400 line-through text-base">R$ {promo.oldPrice.toFixed(2)}</span>
+            <span className="text-gray-400 flex items-baseline old-price-strike ml-4 opacity-70">
+            {(() => {
+                const priceStr = promo.oldPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const lastComma = priceStr.lastIndexOf(',');
+                const inteiros = priceStr.substring(0, lastComma);
+                const centavos = priceStr.substring(lastComma + 1);
+                return (
+                <>
+                    <span className="text-xs font-normal relative -top-2 mr-0.5" style={{ letterSpacing: '-0.5px' }}>R$</span>
+                    <span className="text-2xl font-extrabold leading-none">{inteiros}</span>
+                    <span className="text-2xl font-extrabold leading-none">,</span>
+                    <span className="text-xs font-bold ml-0.5" style={{ lineHeight: '1.1' }}>{centavos}</span>
+                </>
+                )
+            })()}
+            </span>
           )}
         </div>
       </div>
       {/* Botão sempre colado na base, fora do wrapper de conteúdo principal */}
       <button
-        className="bg-purple-500 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
-        onClick={handleBuy}
+        className="bg-purple-500 text-white px-6 py-2 rounded-md font-bold text-lg hover:bg-purple-700 transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
+        onClick={() => handleBuy(promo.priceId)}
         disabled={loading}
       >
-        {loading ? "Processando..." : "Comprar a Coleção Completa"}
+        {loading ? "Processando..." : "Comprar Agora"}
       </button>
     </div>
   );
