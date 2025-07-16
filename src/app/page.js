@@ -79,7 +79,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-4">Veja o Livro por <span className="text-indigo-600">Dentro</span></h2>
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Escolha a melhor opção para você e comece a colorir hoje mesmo.</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center items-stretch mx-auto max-w-fit mb-8">
             {books.map((book, idx) => {
               if (book.isPromo) {
                 // Pega as capas dos três primeiros livros não promocionais
@@ -155,45 +155,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="depoimentos" className="py-20 bg-white scroll-mt-24">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">O que nossos clientes dizem</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Veja como nossos e-books transformaram a vida de outros leitores.</p>
-          </div>
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[
-              {
-                name: 'Maria Silva',
-                role: 'Empreendedora',
-                avatarUrl: 'https://placehold.co/40x40',
-                quote: 'Os e-books da Astronaut foram fundamentais para o meu negócio. O conteúdo prático e atualizado me ajudou a tomar decisões mais assertivas.'
-              },
-              {
-                name: 'João Oliveira',
-                role: 'Desenvolvedor',
-                avatarUrl: 'https://placehold.co/40x40',
-                quote: 'Adorei o formato dos e-books! O conteúdo é bem organizado e fácil de entender, mesmo para quem não é especialista no assunto.'
-              }
-            ].map((testimonial, index) => (
-              <div key={index} className="bg-gray-50 p-8 rounded-xl shadow-md">
-                <div className="flex items-center mb-4">
-                  <img src={testimonial.avatarUrl} alt={`Foto de ${testimonial.name}`} className="w-12 h-12 rounded-full" />
-                  <div className="ml-4">
-                    <h4 className="font-bold text-gray-800">{testimonial.name}</h4>
-                    <p className="text-sm text-gray-600">{testimonial.role}</p>
-                  </div>
-                </div>
-                <p className="text-gray-600 italic">"{testimonial.quote}"</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Contact Section */}
-      <section id="contato" className="py-20 bg-gray-50 scroll-mt-24">
+      <section id="contato" className="py-20 bg-white scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Entre em contato</h2>

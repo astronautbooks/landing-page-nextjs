@@ -30,7 +30,6 @@ const books = [
     page1: "page1.png",
     page2: "page2.png",
     price: 7.99,
-    oldPrice: 9.99,
     priceId: process.env.PRICE_ID_SEA,
     isPromo: false
   },

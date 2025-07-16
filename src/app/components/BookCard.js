@@ -30,12 +30,12 @@ export default function BookCard({ book }) {
   const getImgPath = (img) => `${book.path}/${img}`;
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center w-full mx-auto border border-gray-200">
+    <div className="bg-white rounded-xl shadow-md p-4 flex flex-col items-center w-80 h-full border border-gray-200">
       {/* Main image */}
       <img
         src={getImgPath(images[selected])}
         alt={book.title}
-        className="h-72 w-auto rounded-lg border border-gray-200 mb-4 object-contain"
+        className="h-64 w-48 rounded-lg border border-gray-200 mb-4 object-cover object-center"
       />
       {/* Thumbnails */}
       <div className="flex space-x-2 mb-4">
@@ -54,24 +54,39 @@ export default function BookCard({ book }) {
           </button>
         ))}
       </div>
-      {/* Title */}
-      <div className="font-bold text-lg text-center mb-2">{book.title}</div>
-      {/* Price */}
+      {/* Price pill */}
       <div className="flex items-center justify-center mb-4">
-        <span className="bg-yellow-100 text-yellow-800 font-bold px-4 py-2 rounded-full text-lg mr-3">
-          R$ {book.price.toFixed(2)}
-        </span>
+        {/* Preço profissional: R$ pequeno, inteiros grandes, vírgula, centavos pequenos */}
+        {(() => {
+          const priceStr = book.price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          const lastComma = priceStr.lastIndexOf(',');
+          const inteiros = priceStr.substring(0, lastComma);
+          const centavos = priceStr.substring(lastComma + 1);
+          return (
+            <span className="flex items-baseline justify-center">
+              <span className="text-yellow-900 text-xs font-normal relative -top-2 mr-0.5" style={{ letterSpacing: '-0.5px' }}>R$</span>
+              <span className="text-yellow-900 text-2xl font-extrabold leading-none">{inteiros}</span>
+              <span className="text-yellow-900 text-2xl font-extrabold leading-none">,</span>
+              <span className="text-yellow-900 text-xs font-bold ml-0.5" style={{ lineHeight: '1.1' }}>{centavos}</span>
+            </span>
+          )
+        })()}
         {book.oldPrice && (
-          <span className="text-gray-400 line-through text-base">R$ {book.oldPrice.toFixed(2)}</span>
+          <span className="text-gray-400 line-through text-base ml-4">R$ {book.oldPrice.toFixed(2)}</span>
         )}
       </div>
       {/* Buy button Mercado Pago only */}
       <button
-        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
+        className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
+        style={{}}
         onClick={() => handleBuy(book.priceId)}
         disabled={loading}
       >
-        {loading ? "Processando..." : "Comprar Agora"}
+        {loading ? (
+          "Processando..."
+        ) : (
+          <span className="flex flex-col items-center">Comprar Agora</span>
+        )}
       </button>
     </div>
   );
