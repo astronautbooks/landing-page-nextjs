@@ -64,10 +64,10 @@ export default function BookCard({ book }) {
           const centavos = priceStr.substring(lastComma + 1);
           return (
             <span className="flex items-baseline justify-center">
-              <span className="text-yellow-900 text-xs font-normal relative -top-2 mr-0.5" style={{ letterSpacing: '-0.5px' }}>R$</span>
-              <span className="text-yellow-900 text-2xl font-extrabold leading-none">{inteiros}</span>
-              <span className="text-yellow-900 text-2xl font-extrabold leading-none">,</span>
-              <span className="text-yellow-900 text-xs font-bold ml-0.5" style={{ lineHeight: '1.1' }}>{centavos}</span>
+              <span className="text-xs font-normal relative -top-2 mr-0.5" style={{ letterSpacing: '-0.5px' }}>R$</span>
+              <span className="text-2xl font-extrabold leading-none">{inteiros}</span>
+              <span className="text-2xl font-extrabold leading-none">,</span>
+              <span className="text-xs font-bold ml-0.5" style={{ lineHeight: '1.1' }}>{centavos}</span>
             </span>
           )
         })()}
@@ -77,7 +77,7 @@ export default function BookCard({ book }) {
       </div>
       {/* Buy button Mercado Pago only */}
       <button
-        className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
+        className="bg-indigo-700 text-white px-6 py-2 rounded-full font-bold text-lg hover:bg-[#3730a3] transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
         style={{}}
         onClick={() => handleBuy(book.priceId)}
         disabled={loading}
