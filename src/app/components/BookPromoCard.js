@@ -11,7 +11,7 @@ import books from "../booksData";
  * - covers: array de paths das capas dos livros
  */
 export default function BookPromoCard({ promo, covers }) {
-  // const { handleBuy, loading } = useStripeCheckout(); // Ocultando Stripe
+  const { handleBuy, loading } = useStripeCheckout();
   const { handleMpBuy, loading: mpLoading } = useMercadoPagoCheckout();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:8888";
   const picture_url = `${siteUrl}/images/collection-thumb.png`;
@@ -53,10 +53,10 @@ export default function BookPromoCard({ promo, covers }) {
       {/* Botão de compra Mercado Pago only */}
       <button
         className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
-        onClick={() => handleMpBuy({ title: promo.title, price: promo.price, picture_url })}
-        disabled={mpLoading}
+        onClick={() => handleBuy(promo.priceId)}
+        disabled={loading}
       >
-        {mpLoading ? "Processando..." : "Comprar Coleção"}
+        {loading ? "Processando..." : "Comprar Coleção"}
       </button>
     </div>
   );

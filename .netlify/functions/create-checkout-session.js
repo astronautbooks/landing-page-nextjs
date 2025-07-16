@@ -8,7 +8,7 @@ exports.handler = async (event) => {
 
   // Create Stripe Checkout session using the priceId
   const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
+    payment_method_types: ['card'], // Enable card (for Google Pay/Apple Pay) and boleto
     line_items: [
       {
         price: priceId,

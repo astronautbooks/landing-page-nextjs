@@ -21,7 +21,7 @@ export default function BookCard({ book }) {
   // Array of all images (cover + pages)
   const images = [book.cover, book.page1, book.page2];
   const [selected, setSelected] = useState(0); // 0 = cover
-  // const { handleBuy, loading } = useStripeCheckout(); // Ocultando Stripe
+  const { handleBuy, loading } = useStripeCheckout();
   const { handleMpBuy, loading: mpLoading } = useMercadoPagoCheckout();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:8888";
   const picture_url = `${siteUrl}${book.path}/cover-thumb.png`;
@@ -68,10 +68,10 @@ export default function BookCard({ book }) {
       {/* Buy button Mercado Pago only */}
       <button
         className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
-        onClick={() => handleMpBuy({ title: book.title, price: book.price, picture_url })}
-        disabled={mpLoading}
+        onClick={() => handleBuy(book.priceId)}
+        disabled={loading}
       >
-        {mpLoading ? "Processando..." : "Comprar Agora"}
+        {loading ? "Processando..." : "Comprar Agora"}
       </button>
     </div>
   );
