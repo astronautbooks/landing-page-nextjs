@@ -23,7 +23,8 @@ export default function BookCard({ book }) {
   const [selected, setSelected] = useState(0); // 0 = cover
   const { handleBuy, loading } = useStripeCheckout();
   const { handleMpBuy, loading: mpLoading } = useMercadoPagoCheckout();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:8888";
+  // Always use the environment variable for the site URL
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
   const picture_url = `${siteUrl}${book.path}/cover-thumb.png`;
 
   // Helper to get full image path
