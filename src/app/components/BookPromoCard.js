@@ -2,7 +2,6 @@
 import React from "react";
 import { useStripeCheckout } from "../hooks/useStripeCheckout";
 import { useMercadoPagoCheckout } from "../hooks/useMercadoPagoCheckout";
-import books from "../booksData";
 
 /**
  * BookPromoCard component displays a special promo card for all books.
