@@ -19,6 +19,7 @@ exports.handler = async (event) => {
     success_url,
     cancel_url,
     locale: 'pt-BR', // Força o idioma do checkout para português brasileiro
+    customer_creation: 'always', // Always create a customer to ensure email is available in webhooks
   });
 
   return {
