@@ -1,5 +1,6 @@
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import { CartProvider } from "./CartContext";
 
 // Montserrat font configuration
 const montserrat = Montserrat({
@@ -22,7 +23,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" className={`${fontClass} font-sans`}>
       <body className="antialiased">
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );

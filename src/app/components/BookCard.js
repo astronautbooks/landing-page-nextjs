@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useStripeCheckout } from "../hooks/useStripeCheckout";
 import { useMercadoPagoCheckout } from "../hooks/useMercadoPagoCheckout";
+import { useCart } from "../CartContext";
 
 export default function BookCard({ book }) {
   // Array of all images (cover + pages)
@@ -10,6 +11,7 @@ export default function BookCard({ book }) {
   const [hiddenIdxs, setHiddenIdxs] = useState([]); // Índices das imagens que deram erro
   const { handleBuy, loading } = useStripeCheckout();
   const { handleMpBuy, loading: mpLoading } = useMercadoPagoCheckout();
+  const { addToCart } = useCart();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
   // Helper to get full image path
@@ -67,18 +69,18 @@ export default function BookCard({ book }) {
           )
         })()}
       </div>
-      {/* Buy button Stripe */}
+      {/* Add to Cart button (only action) */}
       <button
         className="bg-indigo-700 text-white px-6 py-2 rounded-md font-bold text-lg hover:bg-[#3730a3] transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
-        style={{}}
-        onClick={() => handleBuy(priceId)}
-        disabled={loading || !priceId}
+        onClick={() => addToCart({
+          id: book.id,
+          title: book.title,
+          price: price,
+          cover: book.cover,
+          priceId: priceId // Adiciona o ID do preço do Stripe
+        })}
       >
-        {loading ? (
-          "Processando..."
-        ) : (
-          <span className="flex flex-col items-center">Comprar Agora</span>
-        )}
+        Adicionar ao carrinho
       </button>
     </div>
   );
