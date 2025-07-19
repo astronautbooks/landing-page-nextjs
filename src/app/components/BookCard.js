@@ -5,8 +5,15 @@ import { useMercadoPagoCheckout } from "../hooks/useMercadoPagoCheckout";
 import { useCart } from "../CartContext";
 
 export default function BookCard({ book }) {
-  // Array of all images (cover + pages)
-  const images = [book.cover, book.page1, book.page2, book.page3, book.page4, book.page5].filter(Boolean);
+  // Array of all images (cover + pages) vindos dos metadados do Stripe
+  const images = [
+    book.metadata?.cover,
+    book.metadata?.page1,
+    book.metadata?.page2,
+    book.metadata?.page3,
+    book.metadata?.page4,
+    book.metadata?.page5,
+  ].filter(Boolean);
   const [selected, setSelected] = useState(0); // 0 = cover
   const [hiddenIdxs, setHiddenIdxs] = useState([]); // Índices das imagens que deram erro
   const { handleBuy, loading } = useStripeCheckout();
@@ -17,17 +24,16 @@ export default function BookCard({ book }) {
   // Helper to get full image path
   const getImgPath = (img) => img;
 
-  // Busca o preço ativo (is_active === true) ou o primeiro preço disponível
-  const activeBookPrice = book.book_prices?.find(bp => bp.price?.is_active) || book.book_prices?.[0];
-  const price = activeBookPrice?.price?.price || 0;
-  const priceId = activeBookPrice?.price?.id || "";
+  // Preço e priceId vindos do Stripe
+  const price = book.price || 0;
+  const priceId = book.priceId || "";
 
   return (
     <div className="bg-white rounded-xl shadow-[0_4px_24px_rgba(67,56,202,0.12)] p-4 flex flex-col items-center w-80 h-full border border-gray-200">
       {/* Main image */}
       <img
         src={getImgPath(images[selected])}
-        alt={book.title}
+        alt={book.name || book.title}
         className="h-64 w-50 border border-gray-200 mb-4 object-cover object-center"
         onError={e => { e.target.style.display = 'none'; }}
       />
@@ -55,7 +61,7 @@ export default function BookCard({ book }) {
       <div className="flex items-center justify-center mb-4">
         {/* Preço profissional: R$ pequeno, inteiros grandes, vírgula, centavos pequenos */}
         {(() => {
-          const priceStr = price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          const priceStr = (price / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
           const lastComma = priceStr.lastIndexOf(',');
           const inteiros = priceStr.substring(0, lastComma);
           const centavos = priceStr.substring(lastComma + 1);
@@ -74,10 +80,10 @@ export default function BookCard({ book }) {
         className="bg-indigo-700 text-white px-6 py-2 rounded-md font-bold text-lg hover:bg-[#3730a3] transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
         onClick={() => addToCart({
           id: book.id,
-          title: book.title,
-          price: price,
-          cover: book.cover,
-          priceId: priceId // Adiciona o ID do preço do Stripe
+          title: book.name || book.title,
+          price: price / 100,
+          cover: images[0],
+          priceId: priceId
         })}
       >
         Adicionar ao carrinho

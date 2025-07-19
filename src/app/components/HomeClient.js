@@ -51,7 +51,10 @@ export default function HomeClient({ books }) {
             <div className="absolute w-96 h-96 bg-white bg-opacity-20 rounded-full blur-[100px] z-0"></div>
             {/* Carousel with book covers in Hero Section */}
             <Carousel
-              images={books.slice(0, 3).map(book => ({ src: book.cover, alt: book.title }))}
+              images={books.slice(0, 3).map(book => ({
+                src: book.metadata && book.metadata.cover ? book.metadata.cover : "/images/sample-book.png",
+                alt: book.name || book.title
+              }))}
               extraClassName="rounded-lg h-96 w-auto relative z-10 border border-white border-opacity-75"
             />
           </div>
