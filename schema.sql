@@ -2,17 +2,17 @@
 -- Table order and constraints may not be valid for execution.
 
 CREATE TABLE public.book_prices (
-  id bigint NOT NULL,
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
   book_id bigint,
   price_id text,
   created_at timestamp with time zone DEFAULT timezone('America/Sao_Paulo'::text, now()),
   updated_at timestamp with time zone DEFAULT timezone('America/Sao_Paulo'::text, now()),
   CONSTRAINT book_prices_pkey PRIMARY KEY (id),
-  CONSTRAINT book_prices_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id),
-  CONSTRAINT book_prices_price_id_fkey FOREIGN KEY (price_id) REFERENCES public.prices(id)
+  CONSTRAINT book_prices_price_id_fkey FOREIGN KEY (price_id) REFERENCES public.prices(id),
+  CONSTRAINT book_prices_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(id)
 );
 CREATE TABLE public.books (
-  id bigint NOT NULL,
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
   title text NOT NULL,
   description text NOT NULL,
   cover text NOT NULL,
@@ -26,26 +26,26 @@ CREATE TABLE public.books (
   CONSTRAINT books_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.order_items (
-  id bigint NOT NULL,
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
   book_price_id bigint NOT NULL,
-  order_id bigint,
+  payment_intent_id text,
   quantity integer NOT NULL DEFAULT 1,
   created_at timestamp with time zone DEFAULT timezone('America/Sao_Paulo'::text, now()),
   updated_at timestamp with time zone DEFAULT timezone('America/Sao_Paulo'::text, now()),
   CONSTRAINT order_items_pkey PRIMARY KEY (id),
-  CONSTRAINT order_items_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(id),
+  CONSTRAINT order_items_payment_intent_id_fkey FOREIGN KEY (payment_intent_id) REFERENCES public.orders(payment_intent_id),
   CONSTRAINT order_items_book_price_id_fkey FOREIGN KEY (book_price_id) REFERENCES public.book_prices(id)
 );
 CREATE TABLE public.orders (
-  id bigint NOT NULL,
-  order_number bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  payment_intent_id text NOT NULL,
+  order_number bigint NOT NULL,
   stripe_session_id text NOT NULL UNIQUE,
   customer_email text NOT NULL,
   customer_name text NOT NULL,
   status text NOT NULL,
   created_at timestamp with time zone DEFAULT timezone('America/Sao_Paulo'::text, now()),
   updated_at timestamp with time zone DEFAULT timezone('America/Sao_Paulo'::text, now()),
-  CONSTRAINT orders_pkey PRIMARY KEY (id)
+  CONSTRAINT orders_pkey PRIMARY KEY (payment_intent_id)
 );
 CREATE TABLE public.prices (
   id text NOT NULL,

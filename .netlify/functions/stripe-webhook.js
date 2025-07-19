@@ -5,6 +5,24 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 // Import Resend SDK
 const { Resend } = require('resend');
 const resend = new Resend(process.env.RESEND_API_KEY);
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+// Função utilitária para gerar um número de pedido aleatório e único
+async function generateOrderNumber(supabase) {
+  let unique = false;
+  let orderNumber;
+  while (!unique) {
+    orderNumber = Math.floor(100000 + Math.random() * 900000); // 6 dígitos
+    const { data } = await supabase
+      .from('orders')
+      .select('id')
+      .eq('order_number', orderNumber)
+      .single();
+    if (!data) unique = true;
+  }
+  return orderNumber;
+}
 
 // Netlify provides the raw body in event.body (as a string)
 exports.handler = async (event) => {
@@ -29,11 +47,31 @@ exports.handler = async (event) => {
   }
 
   // Handle the event
+  console.log('DEBUG webhook event type:', stripeEvent.type);
   switch (stripeEvent.type) {
     case 'payment_intent.succeeded': {
+      console.log('DEBUG: Entrou no case payment_intent.succeeded');
+      // Delay de 5 segundos para garantir que o registro já foi criado
+      await new Promise(resolve => setTimeout(resolve, 8000));
+      const paymentIntent = stripeEvent.data.object;
+      const paymentIntentId = paymentIntent.id;
+      console.log('DEBUG payment_intent.succeeded:', paymentIntentId);
+
+      // Atualizar para 'paid' se o registro existir
+      const { data, error } = await supabase
+        .from('orders')
+        .update({ status: 'paid' })
+        .eq('payment_intent_id', paymentIntentId)
+        .select();
+
+      console.log('DEBUG update order result:', { data, error });
+      if (data && data.length > 0) {
+        console.log('DEBUG: Status atualizado com sucesso para paid');
+      } else {
+        console.log('DEBUG: Registro não encontrado - aguardando checkout.session.completed');
+      }
       // Payment was successful (boleto, card, etc)
       console.log('✅ Payment succeeded:', stripeEvent.data.object.id);
-      const paymentIntent = stripeEvent.data.object;
       let customerEmail = paymentIntent.receipt_email || paymentIntent.charges?.data?.[0]?.billing_details?.email || paymentIntent.customer_email;
       let customerName = paymentIntent.charges?.data?.[0]?.billing_details?.name || '';
       let paymentMethod = paymentIntent.charges?.data?.[0]?.payment_method_details?.type || '';
@@ -95,18 +133,24 @@ exports.handler = async (event) => {
       console.log('ℹ️ Payment processing:', stripeEvent.data.object.id);
       break;
     case 'payment_intent.payment_failed': {
-      // Payment failed: notify the customer
+      // Atualizar pedido para 'failed'
       const paymentIntent = stripeEvent.data.object;
-      let customerEmail = paymentIntent.receipt_email || paymentIntent.charges?.data?.[0]?.billing_details?.email || paymentIntent.customer_email;
-      let customerName = paymentIntent.charges?.data?.[0]?.billing_details?.name || '';
-      let paymentMethod = paymentIntent.charges?.data?.[0]?.payment_method_details?.type || '';
-      let cardLast4 = paymentIntent.charges?.data?.[0]?.payment_method_details?.card?.last4 || '';
-      let boletoUrl = paymentIntent.charges?.data?.[0]?.payment_method_details?.boleto?.url || '';
-      let pixInfo = paymentIntent.charges?.data?.[0]?.payment_method_details?.pix || null;
-      let amount = (paymentIntent.amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: paymentIntent.currency.toUpperCase() });
-      let orderId = paymentIntent.id;
-      let orderDate = new Date(paymentIntent.created * 1000).toLocaleString('pt-BR');
-      let paymentDetails = '';
+      const paymentIntentId = paymentIntent.id;
+      await supabase
+        .from('orders')
+        .update({ status: 'failed' })
+        .eq('payment_intent_id', paymentIntentId);
+      // Payment failed: notify the customer
+      const customerEmail = paymentIntent.receipt_email || paymentIntent.charges?.data?.[0]?.billing_details?.email || paymentIntent.customer_email;
+      const customerName = paymentIntent.charges?.data?.[0]?.billing_details?.name || '';
+      const paymentMethod = paymentIntent.charges?.data?.[0]?.payment_method_details?.type || '';
+      const cardLast4 = paymentIntent.charges?.data?.[0]?.payment_method_details?.card?.last4 || '';
+      const boletoUrl = paymentIntent.charges?.data?.[0]?.payment_method_details?.boleto?.url || '';
+      const pixInfo = paymentIntent.charges?.data?.[0]?.payment_method_details?.pix || null;
+      const amount = (paymentIntent.amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: paymentIntent.currency.toUpperCase() });
+      const orderId = paymentIntent.id;
+      const orderDate = new Date(paymentIntent.created * 1000).toLocaleString('pt-BR');
+      const paymentDetails = '';
       if (paymentMethod === 'card') {
         paymentDetails = `Cartão de crédito final ${cardLast4}`;
       } else if (paymentMethod === 'boleto') {
@@ -162,18 +206,24 @@ exports.handler = async (event) => {
       break;
     }
     case 'payment_intent.canceled': {
-      // Payment canceled: notify the customer
+      // Atualizar pedido para 'canceled'
       const paymentIntent = stripeEvent.data.object;
-      let customerEmail = paymentIntent.receipt_email || paymentIntent.charges?.data?.[0]?.billing_details?.email || paymentIntent.customer_email;
-      let customerName = paymentIntent.charges?.data?.[0]?.billing_details?.name || '';
-      let paymentMethod = paymentIntent.charges?.data?.[0]?.payment_method_details?.type || '';
-      let cardLast4 = paymentIntent.charges?.data?.[0]?.payment_method_details?.card?.last4 || '';
-      let boletoUrl = paymentIntent.charges?.data?.[0]?.payment_method_details?.boleto?.url || '';
-      let pixInfo = paymentIntent.charges?.data?.[0]?.payment_method_details?.pix || null;
-      let amount = (paymentIntent.amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: paymentIntent.currency.toUpperCase() });
-      let orderId = paymentIntent.id;
-      let orderDate = new Date(paymentIntent.created * 1000).toLocaleString('pt-BR');
-      let paymentDetails = '';
+      const paymentIntentId = paymentIntent.id;
+      await supabase
+        .from('orders')
+        .update({ status: 'canceled' })
+        .eq('payment_intent_id', paymentIntentId);
+      // Payment canceled: notify the customer
+      const customerEmail = paymentIntent.receipt_email || paymentIntent.charges?.data?.[0]?.billing_details?.email || paymentIntent.customer_email;
+      const customerName = paymentIntent.charges?.data?.[0]?.billing_details?.name || '';
+      const paymentMethod = paymentIntent.charges?.data?.[0]?.payment_method_details?.type || '';
+      const cardLast4 = paymentIntent.charges?.data?.[0]?.payment_method_details?.card?.last4 || '';
+      const boletoUrl = paymentIntent.charges?.data?.[0]?.payment_method_details?.boleto?.url || '';
+      const pixInfo = paymentIntent.charges?.data?.[0]?.payment_method_details?.pix || null;
+      const amount = (paymentIntent.amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: paymentIntent.currency.toUpperCase() });
+      const orderId = paymentIntent.id;
+      const orderDate = new Date(paymentIntent.created * 1000).toLocaleString('pt-BR');
+      const paymentDetails = '';
       if (paymentMethod === 'card') {
         paymentDetails = `Cartão de crédito final ${cardLast4}`;
       } else if (paymentMethod === 'boleto') {
@@ -223,23 +273,78 @@ exports.handler = async (event) => {
       break;
     }
     case 'checkout.session.completed': {
-      // Order received: send confirmation email to the customer
+      // Order received: salvar no banco e enviar e-mail com número do pedido
       const session = stripeEvent.data.object;
+      console.log('DEBUG session:', JSON.stringify(session, null, 2));
+      console.log('DEBUG session.payment_intent:', session.payment_intent);
       const customerEmail = session.customer_details?.email || session.customer_email;
       const customerName = session.customer_details?.name || '';
-      const orderId = session.id;
+      const stripeSessionId = session.id;
       const orderDate = new Date(session.created * 1000).toLocaleString('pt-BR');
-      let itemsHtml = '';
       let total = (session.amount_total / 100).toLocaleString('pt-BR', { style: 'currency', currency: session.currency.toUpperCase() });
+
+      // 1. Buscar os itens do pedido no Stripe
+      let lineItems;
       try {
-        // Fetch line items for the session
-        const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 10 });
-        itemsHtml = lineItems.data.map(item => `
-          <li><b>${item.description}</b> — Qtd: ${item.quantity} — Valor: ${(item.amount_total / 100).toLocaleString('pt-BR', { style: 'currency', currency: session.currency.toUpperCase() })}</li>
-        `).join('');
+        const result = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 });
+        lineItems = result.data;
       } catch (err) {
         console.error('Error fetching line items:', err);
+        break;
       }
+
+      // 2. Gerar order_number único
+      const orderNumber = await generateOrderNumber(supabase);
+      // 3. Gravar o pedido no Supabase com status 'processing'
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert([{
+          payment_intent_id: session.payment_intent,
+          order_number: orderNumber,
+          stripe_session_id: stripeSessionId,
+          customer_email: customerEmail,
+          customer_name: customerName,
+          status: 'processing',
+        }])
+        .select()
+        .single();
+      console.log('DEBUG insert order result:', { order, orderError });
+
+      if (orderError) {
+        console.error('Erro ao gravar pedido no Supabase:', orderError);
+        break;
+      }
+
+      // 4. Gravar os itens do pedido
+      for (const item of lineItems) {
+        // Buscar o book_price_id correspondente ao price.id do Stripe
+        const { data: bookPrice, error: bpError } = await supabase
+          .from('book_prices')
+          .select('id')
+          .eq('price_id', item.price.id)
+          .single();
+
+        if (bpError || !bookPrice) {
+          console.error('Erro ao buscar book_price_id:', bpError);
+          continue;
+        }
+
+        await supabase.from('order_items').insert([{
+          payment_intent_id: session.payment_intent,
+          book_price_id: bookPrice.id,
+          quantity: item.quantity,
+        }]);
+      }
+
+      // 5. Usar o número do pedido no e-mail
+      // const orderNumber = order.order_number || order.id; // agora já temos orderNumber
+
+      // 6. Montar HTML dos itens
+      const itemsHtml = lineItems.map(item => `
+        <li><b>${item.description}</b> — Qtd: ${item.quantity} — Valor: ${(item.amount_total / 100).toLocaleString('pt-BR', { style: 'currency', currency: session.currency.toUpperCase() })}</li>
+      `).join('');
+
+      // 7. Enviar o e-mail
       if (customerEmail) {
         try {
           await resend.emails.send({
@@ -251,7 +356,7 @@ exports.handler = async (event) => {
               <p>Recebemos seu pedido e estamos processando:</p>
               <ul>${itemsHtml}</ul>
               <p><b>Total:</b> ${total}</p>
-              <p><b>Número do pedido:</b> ${orderId}</p>
+              <p><b>Número do pedido:</b> ${orderNumber}</p>
               <p><b>Data:</b> ${orderDate}</p>
               <p>Se precisar de ajuda, entre em contato conosco.</p>
             `,
