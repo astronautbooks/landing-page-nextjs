@@ -66,16 +66,12 @@ export default function HomeClient({ books }) {
         <div className="container mx-auto px-4 text-center">
           <div className="flex justify-center space-x-4 md:space-x-12">
             <div className="text-center">
-              <div className="text-indigo-600 font-bold text-3xl mb-2">+3.500</div>
-              <div className="text-gray-600">E-books Vendidos</div>
-            </div>
-            <div className="text-center">
-              <div className="text-purple-600 font-bold text-3xl mb-2">92%</div>
-              <div className="text-gray-600">Satisfação dos Clientes</div>
-            </div>
-            <div className="text-center">
               <div className="text-indigo-600 font-bold text-3xl mb-2">100% Digital</div>
               <div className="text-gray-600">Sem Frete, Sem Espera</div>
+            </div>
+            <div className="text-center">
+              <div className="text-indigo-600 font-bold text-3xl mb-2">Envio Imediato</div>
+              <div className="text-gray-600">Receba por e-mail</div>
             </div>
           </div>
         </div>
@@ -165,7 +161,7 @@ export default function HomeClient({ books }) {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Entre em contato</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">Fale conosco e descubra como podemos ajudar você.</p>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 max-w-2xl mx-auto">
             <div className="bg-gray-50 p-8 rounded-xl shadow-md border border-gray-200">
               <form className="space-y-6">
                 <div>
@@ -185,37 +181,6 @@ export default function HomeClient({ books }) {
                 </button>
               </form>
             </div>
-            <div className="bg-gray-50 p-8 rounded-xl shadow-md border border-gray-200">
-              <div className="space-y-8">
-                <div className="flex items-start">
-                  <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mr-4 flex-shrink-0">
-                    <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-800">Endereço</h4>
-                    <p className="text-gray-600">Rua da Conhecimento, 123<br/>São Paulo - SP</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mr-4 flex-shrink-0">
-                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-800">Telefone</h4>
-                    <p className="text-gray-600">(11) 99999-9999</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mr-4 flex-shrink-0">
-                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-800">E-mail</h4>
-                    <p className="text-gray-600">astronaut@gmail.com</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -225,7 +190,7 @@ export default function HomeClient({ books }) {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4">Astronaut</h3>
+              <h3 className="text-xl font-bold mb-4">AstronautBooks</h3>
               <p className="text-gray-400">Transforme seu conhecimento com nossos e-books premium.</p>
             </div>
             <div>
@@ -255,7 +220,7 @@ export default function HomeClient({ books }) {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-            <p className="text-gray-400">&copy; 2025 Astronaut. Todos os direitos reservados.</p>
+            <p className="text-gray-400">&copy; 2025 AstronautBooks. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
