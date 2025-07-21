@@ -3,9 +3,9 @@ const { MercadoPagoConfig, Preference } = mercadopago;
 
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
 
-const success_url = process.env.MP_SUCCESS_URL;
-const cancel_url = process.env.MP_CANCEL_URL;
-const pending_url = process.env.MP_PENDING_URL;
+const success_url = `${process.env.NEXT_PUBLIC_SITE_URL}${process.env.MP_SUCCESS_PATH}`;
+const cancel_url = `${process.env.NEXT_PUBLIC_SITE_URL}${process.env.MP_CANCEL_PATH}`;
+const pending_url = `${process.env.NEXT_PUBLIC_SITE_URL}${process.env.MP_PENDING_PATH}`;
 
 /**
  * Netlify Function to create a Mercado Pago CheckoutPro preference.
@@ -15,11 +15,6 @@ const pending_url = process.env.MP_PENDING_URL;
 exports.handler = async (event) => {
   try {
     const { title, price, picture_url } = JSON.parse(event.body);
-
-    // Debug: log the URLs being used
-    console.log("MP_SUCCESS_URL:", success_url);
-    console.log("MP_CANCEL_URL:", cancel_url);
-    console.log("MP_PENDING_URL:", pending_url);
 
     const preference = {
       items: [{ title, unit_price: price, quantity: 1, picture_url }],

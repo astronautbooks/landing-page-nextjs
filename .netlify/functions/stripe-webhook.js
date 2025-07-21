@@ -50,6 +50,8 @@ exports.handler = async (event) => {
   console.log('DEBUG webhook event type:', stripeEvent.type);
   switch (stripeEvent.type) {
     case 'payment_intent.succeeded': {
+      console.log('*** PAYMENT_INTENT SUCCEEDED ***');
+
       // Delay de 5 segundos para garantir que o registro já foi criado
       await new Promise(resolve => setTimeout(resolve, 8000));
       const paymentIntent = stripeEvent.data.object;
@@ -258,6 +260,7 @@ exports.handler = async (event) => {
       break;
     }
     case 'checkout.session.completed': {
+      console.log('*** CHECKOUT SESSION COMPLETED ***');
       // Gera um número amigável único para o app_id
       let unique = false;
       let appId;

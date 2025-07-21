@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useStripeCheckout } from "../hooks/useStripeCheckout";
 import { useMercadoPagoCheckout } from "../hooks/useMercadoPagoCheckout";
 import { useCart } from "../CartContext";
+import toast from "react-hot-toast";
 
 export default function BookCard({ book }) {
   // Array of all images (cover + pages) vindos dos metadados do Stripe
@@ -16,10 +17,12 @@ export default function BookCard({ book }) {
   ].filter(Boolean);
   const [selected, setSelected] = useState(0); // 0 = cover
   const [hiddenIdxs, setHiddenIdxs] = useState([]); // Índices das imagens que deram erro
+  const [added, setAdded] = useState(false); // Estado para feedback do botão
   const { handleBuy, loading } = useStripeCheckout();
   const { handleMpBuy, loading: mpLoading } = useMercadoPagoCheckout();
-  const { addToCart } = useCart();
+  const { addToCart, cartIconRef } = useCart();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const coverImgRef = useRef(null); // Ref para a imagem da capa
 
   // Helper to get full image path
   const getImgPath = (img) => img;
@@ -28,10 +31,56 @@ export default function BookCard({ book }) {
   const price = book.price || 0;
   const priceId = book.priceId || "";
 
+  // Função para animar a imagem da capa até o carrinho
+  function animateFlyToCart() {
+    if (!coverImgRef.current || !cartIconRef?.current) return;
+    const imgRect = coverImgRef.current.getBoundingClientRect();
+    const cartRect = cartIconRef.current.getBoundingClientRect();
+
+    // Cria um clone da imagem
+    const clone = coverImgRef.current.cloneNode(true);
+    clone.style.position = 'fixed';
+    clone.style.left = imgRect.left + 'px';
+    clone.style.top = imgRect.top + 'px';
+    clone.style.width = imgRect.width + 'px';
+    clone.style.height = imgRect.height + 'px';
+    clone.style.zIndex = 9999;
+    clone.style.pointerEvents = 'none';
+    clone.style.transition = 'all 0.8s cubic-bezier(0.4,1,0.6,1), opacity 0.8s cubic-bezier(0.4,1,0.6,1)';
+    document.body.appendChild(clone);
+
+    // Força reflow para garantir que o transition funcione
+    void clone.offsetWidth;
+
+    // Tamanho final do clone (pequeno, para sumir no carrinho)
+    const finalWidth = 0;
+    const finalHeight = 0;
+
+    // Calcula o destino para o centro do carrinho
+    const cartCenterX = cartRect.left + cartRect.width / 2;
+    const cartCenterY = cartRect.top + cartRect.height / 2;
+    // O centro do clone final deve coincidir com o centro do carrinho
+    const destX = cartCenterX - finalWidth / 2;
+    const destY = cartCenterY - finalHeight / 2;
+
+    // Aplica a transformação
+    clone.style.left = destX + 'px';
+    clone.style.top = destY + 'px';
+    clone.style.width = finalWidth + 'px';
+    clone.style.height = finalHeight + 'px';
+    clone.style.opacity = '0';
+
+    // Remove o clone após a animação
+    clone.addEventListener('transitionend', () => {
+      clone.remove();
+    });
+  }
+
   return (
     <div className="bg-white rounded-xl shadow-[0_4px_24px_rgba(67,56,202,0.12)] p-4 flex flex-col items-center w-80 h-full border border-gray-200">
       {/* Main image */}
       <img
+        ref={coverImgRef}
         src={getImgPath(images[selected])}
         alt={book.name || book.title}
         className="h-64 w-50 border border-gray-200 mb-4 object-cover object-center"
@@ -78,15 +127,22 @@ export default function BookCard({ book }) {
       {/* Add to Cart button (only action) */}
       <button
         className="bg-indigo-700 text-white px-6 py-2 rounded-md font-bold text-lg hover:bg-[#3730a3] transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
-        onClick={() => addToCart({
-          id: book.id,
-          title: book.name || book.title,
-          price: price / 100,
-          cover: images[0],
-          priceId: priceId
-        })}
+        onClick={() => {
+          addToCart({
+            id: book.id,
+            title: book.name || book.title,
+            price: price / 100,
+            cover: images[0],
+            priceId: priceId
+          });
+          toast.success('Produto adicionado ao carrinho!');
+          setAdded(true);
+          setTimeout(() => setAdded(false), 1000);
+          animateFlyToCart();
+        }}
+        disabled={added}
       >
-        Adicionar ao carrinho
+        {added ? '✔️ Adicionado!' : 'Adicionar ao carrinho'}
       </button>
     </div>
   );

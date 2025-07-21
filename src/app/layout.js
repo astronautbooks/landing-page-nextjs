@@ -1,6 +1,7 @@
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "./CartContext";
+import { Toaster } from "react-hot-toast";
 
 // Montserrat font configuration
 const montserrat = Montserrat({
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
         <CartProvider>
           {children}
         </CartProvider>
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );

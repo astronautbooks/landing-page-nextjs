@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useRef } from 'react';
 
 /**
  * CartContext provides global state for the shopping cart.
@@ -13,6 +13,7 @@ export const CartContext = createContext();
 export function CartProvider({ children }) {
   // Cart state: array of items { id, title, price, quantity, cover }
   const [cartItems, setCartItems] = useState([]);
+  const [cartIconRef, setCartIconRef] = useState(null); // Ref do ícone do carrinho
 
   /**
    * Add a book to the cart. If it already exists, increase quantity.
@@ -59,7 +60,7 @@ export function CartProvider({ children }) {
   }
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateQuantity, clearCart }}>
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateQuantity, clearCart, cartIconRef, setCartIconRef }}>
       {children}
     </CartContext.Provider>
   );

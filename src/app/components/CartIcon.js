@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { useCart } from "../CartContext";
 import { ShoppingCart /*, ShoppingBag, Cart */ } from "lucide-react";
 
@@ -9,12 +9,19 @@ import { ShoppingCart /*, ShoppingBag, Cart */ } from "lucide-react";
  * To try other icons, import and use ShoppingBag or Cart from lucide-react.
  */
 export default function CartIcon({ onClick }) {
-  const { cartItems } = useCart();
+  const { cartItems, setCartIconRef } = useCart();
+  const iconRef = useRef(null);
+
+  useEffect(() => {
+    setCartIconRef(iconRef);
+  }, [setCartIconRef]);
+
   // Calculate total quantity of items in the cart
   const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <button
+      ref={iconRef}
       className="relative focus:outline-none"
       aria-label="Abrir carrinho"
       onClick={onClick}
