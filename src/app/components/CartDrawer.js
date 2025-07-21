@@ -13,23 +13,31 @@ export default function CartDrawer({ open, onClose }) {
   const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
   const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   /**
    * Sends all cart items to the checkout API and redirects to Stripe Checkout.
    */
   async function handleCheckout() {
     if (cartItems.length === 0) return;
+    // Validação simples de e-mail
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      setEmailError("Digite um e-mail válido.");
+      return;
+    }
+    setEmailError("");
     setLoading(true);
     try {
       // Monta o array de line_items para o backend
       const items = cartItems.map(item => ({
         price: item.priceId, // Sempre o ID do preço do Stripe
-        quantity: item.quantity || 1
+        quantity: 1 // Sempre 1 para produtos digitais
       }));
       const response = await fetch("/.netlify/functions/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify({ items, email }),
       });
       const data = await response.json();
       if (data?.url) {
@@ -76,11 +84,6 @@ export default function CartDrawer({ open, onClose }) {
                 <div className="flex-1">
                   <div className="font-semibold text-gray-800">{item.title}</div>
                   <div className="text-sm text-gray-500">R$ {item.price.toFixed(2)}</div>
-                  <div className="flex items-center mt-2 gap-2">
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} className="px-2 py-0.5 bg-gray-200 rounded text-lg font-bold">-</button>
-                    <span className="px-2">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-2 py-0.5 bg-gray-200 rounded text-lg font-bold">+</button>
-                  </div>
                 </div>
                 <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-700 text-xl font-bold ml-2">×</button>
               </div>
@@ -92,6 +95,22 @@ export default function CartDrawer({ open, onClose }) {
           <div className="flex justify-between items-center mb-4">
             <span className="font-semibold text-lg">Total:</span>
             <span className="font-bold text-xl text-indigo-700">R$ {total.toFixed(2)}</span>
+          </div>
+          {/* Campo de e-mail */}
+          <div className="mb-3">
+            <label htmlFor="checkout-email" className="block text-sm font-medium text-gray-700 mb-1">E-mail para receber o pedido:</label>
+            <input
+              id="checkout-email"
+              type="email"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="seu@email.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              disabled={loading}
+            />
+            {emailError && <div className="text-red-600 text-sm mt-1">{emailError}</div>}
           </div>
           <button
             className="w-full bg-indigo-700 text-white py-3 rounded-lg font-bold text-lg hover:bg-indigo-800 transition mb-2 disabled:opacity-60"

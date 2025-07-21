@@ -4,6 +4,7 @@ import { useStripeCheckout } from "../hooks/useStripeCheckout";
 import { useMercadoPagoCheckout } from "../hooks/useMercadoPagoCheckout";
 import { useCart } from "../CartContext";
 import toast from "react-hot-toast";
+import { CheckCircle } from 'lucide-react';
 
 export default function BookCard({ book }) {
   // Array of all images (cover + pages) vindos dos metadados do Stripe
@@ -20,9 +21,11 @@ export default function BookCard({ book }) {
   const [added, setAdded] = useState(false); // Estado para feedback do botão
   const { handleBuy, loading } = useStripeCheckout();
   const { handleMpBuy, loading: mpLoading } = useMercadoPagoCheckout();
-  const { addToCart, cartIconRef } = useCart();
+  const { addToCart, cartIconRef, cartItems } = useCart();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
   const coverImgRef = useRef(null); // Ref para a imagem da capa
+
+  const isInCart = cartItems.some(item => item.id === book.id);
 
   // Helper to get full image path
   const getImgPath = (img) => img;
@@ -126,7 +129,7 @@ export default function BookCard({ book }) {
       </div>
       {/* Add to Cart button (only action) */}
       <button
-        className="bg-indigo-700 text-white px-6 py-2 rounded-md font-bold text-lg hover:bg-[#3730a3] transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full"
+        className="bg-indigo-700 text-white px-6 py-2 rounded-md font-bold text-lg hover:bg-[#3730a3] transition shadow disabled:opacity-60 disabled:cursor-not-allowed w-full flex items-center justify-center gap-2"
         onClick={() => {
           addToCart({
             id: book.id,
@@ -140,9 +143,14 @@ export default function BookCard({ book }) {
           setTimeout(() => setAdded(false), 1000);
           animateFlyToCart();
         }}
-        disabled={added}
+        disabled={added || isInCart}
       >
-        {added ? '✔️ Adicionado!' : 'Adicionar ao carrinho'}
+        {isInCart ? (
+          <>
+            No Carrinho!
+            <CheckCircle className="w-5 h-5 ml-2" strokeWidth={2} fill="none" />
+          </>
+        ) : (added ? '✔️ No Carrinho!' : 'Adicionar ao Carrinho')}
       </button>
     </div>
   );
