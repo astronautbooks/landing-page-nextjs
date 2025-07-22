@@ -9,6 +9,7 @@ const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const path = require('path');
 const fs = require('fs');
+const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 
 // Função utilitária para gerar um número de pedido aleatório e único
 async function generateOrderNumber(supabase) {
@@ -24,6 +25,25 @@ async function generateOrderNumber(supabase) {
     if (!data) unique = true;
   }
   return orderNumber;
+}
+
+// Função utilitária para gerar PDF com watermark personalizada
+async function gerarPdfComWatermark(pdfPath, watermarkText) {
+  const existingPdfBytes = fs.readFileSync(pdfPath);
+  const pdfDoc = await PDFDocument.load(existingPdfBytes);
+  const pages = pdfDoc.getPages();
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  pages.forEach(page => {
+    page.drawText(watermarkText, {
+      x: 40,
+      y: 20,
+      size: 10,
+      font,
+      color: rgb(0.5, 0.5, 0.5),
+      opacity: 0.7,
+    });
+  });
+  return await pdfDoc.save();
 }
 
 // Netlify provides the raw body in event.body (as a string)
@@ -124,6 +144,9 @@ exports.handler = async (event) => {
       try {
         const sessions = await stripe.checkout.sessions.list({ payment_intent: paymentIntentId, limit: 1 });
         session = sessions.data[0];
+        // LOGS para depuração do CPF/CNPJ
+        console.log('SESSION:', JSON.stringify(session, null, 2));
+        console.log('PAYMENT INTENT:', JSON.stringify(paymentIntent, null, 2));
       } catch (err) {
         console.error('Erro ao buscar sessão de checkout pelo payment_intent:', err);
         break;
@@ -183,23 +206,38 @@ exports.handler = async (event) => {
         };
       }).filter(Boolean);
 
-      // Preparar anexos dos PDFs (apenas PDFs, sem thumbnails)
-      const attachments = purchasedBooks.map(book => {
+      // Preparar anexos dos PDFs (com watermark personalizada)
+      const attachments = await Promise.all(purchasedBooks.map(async book => {
         const slug = book.thumb.split('/')[2];
         const pdfPath = path.join(__dirname, '..', '..', 'public', 'images', slug, 'book.pdf');
         let pdfContent = null;
         try {
-          pdfContent = fs.readFileSync(pdfPath);
+          // Buscar CPF do comprador (se disponível)
+          let customerCpf = '';
+          if (session?.customer_details?.tax_ids?.length > 0) {
+            customerCpf = session.customer_details.tax_ids[0].value;
+          } else if (session?.customer_details?.tax_id) {
+            customerCpf = session.customer_details.tax_id;
+          } else if (session?.customer_details?.tax_id_data?.value) {
+            customerCpf = session.customer_details.tax_id_data.value;
+          } else if (paymentIntent && paymentIntent.customer_tax_ids && paymentIntent.customer_tax_ids.length > 0) {
+            customerCpf = paymentIntent.customer_tax_ids[0].value;
+          }
+          const watermark = `Comprador: ${customerName || ''} | E-mail: ${customerEmail || ''} | CPF: ${customerCpf || ''} | Pedido: ${appId}`;
+          pdfContent = await gerarPdfComWatermark(pdfPath, watermark);
+          console.log('PDF gerado:', pdfPath, pdfContent && pdfContent.length);
+          // fs.writeFileSync(`/tmp/teste-${book.name}.pdf`, pdfContent); // Para teste local
         } catch (err) {
-          console.error('Erro ao ler PDF para anexo:', pdfPath, err);
+          console.error('Erro ao gerar PDF com watermark:', pdfPath, err);
         }
         return pdfContent
           ? {
               filename: `${book.name}.pdf`,
-              content: pdfContent,
+              content: Buffer.from(pdfContent),
+              contentType: 'application/pdf'
             }
           : null;
-      }).filter(Boolean);
+      })).then(arr => arr.filter(Boolean));
 
       // Montar HTML da lista de produtos (layout profissional)
       const productsHtml = `

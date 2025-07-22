@@ -16,15 +16,17 @@ export default function HomeClient({ books }) {
           <div className="flex items-center">
             <img src="/images/logo.png" alt="Astronaut Logo" className="h-16 w-auto mr-2" />
           </div>
-          <nav className="hidden md:flex space-x-8">
-            <a href="#ebooks" className="text-gray-600 hover:text-indigo-600 font-medium">E-books</a>
-            <a href="#beneficios" className="text-gray-600 hover:text-indigo-600 font-medium">Benefícios</a>
-            <a href="#depoimentos" className="text-gray-600 hover:text-indigo-600 font-medium">Depoimentos</a>
-            <a href="#contato" className="text-gray-600 hover:text-indigo-600 font-medium">Contato</a>
-          </nav>
-          {/* Cart icon aligned right */}
-          <div className="ml-4 flex-shrink-0">
-            <CartIcon onClick={() => setCartOpen(true)} />
+          <div className="flex-1 flex justify-end items-center">
+            <nav className="hidden md:flex space-x-8 mr-8">
+              <a href="#ebooks" className="text-gray-600 hover:text-indigo-600 font-medium">E-books</a>
+              <a href="#beneficios" className="text-gray-600 hover:text-indigo-600 font-medium">Benefícios</a>
+              {/* <a href="#depoimentos" className="text-gray-600 hover:text-indigo-600 font-medium">Depoimentos</a> */}
+              <a href="#contato" className="text-gray-600 hover:text-indigo-600 font-medium">Contato</a>
+            </nav>
+            {/* Cart icon aligned right */}
+            <div className="flex-shrink-0">
+              <CartIcon onClick={() => setCartOpen(true)} />
+            </div>
           </div>
           <button className="md:hidden focus:outline-none">
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -198,7 +200,7 @@ export default function HomeClient({ books }) {
               <ul className="space-y-2">
                 <li><a href="#ebooks" className="text-gray-400 hover:text-white">E-books</a></li>
                 <li><a href="#beneficios" className="text-gray-400 hover:text-white">Benefícios</a></li>
-                <li><a href="#depoimentos" className="text-gray-400 hover:text-white">Depoimentos</a></li>
+                {/* <li><a href="#depoimentos" className="text-gray-400 hover:text-white">Depoimentos</a></li> */}
                 <li><a href="#contato" className="text-gray-400 hover:text-white">Contato</a></li>
               </ul>
             </div>

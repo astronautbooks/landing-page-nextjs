@@ -32,6 +32,8 @@ exports.handler = async (event) => {
     locale: 'pt-BR',
     currency: 'brl',
     customer: customerId || undefined,
+    tax_id_collection: { enabled: true },
+    customer_update: { name: 'auto', address: 'auto' },
   });
 
   return {
