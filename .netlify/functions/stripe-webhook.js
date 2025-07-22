@@ -422,7 +422,41 @@ exports.handler = async (event) => {
     }
     case 'checkout.session.completed': {
       console.log('*** CHECKOUT SESSION COMPLETED ***');
-      // Apenas registra o evento, a lógica principal foi movida para 'payment_intent.succeeded'
+      // Envio de e-mail de confirmação de que o pedido foi recebido
+      const session = stripeEvent.data.object;
+      let customerEmail = session.customer_details?.email || session.customer_email;
+      let customerName = session.customer_details?.name || '';
+      if ((!customerEmail || !customerName) && session.customer) {
+        try {
+          const customer = await stripe.customers.retrieve(session.customer);
+          customerEmail = customerEmail || customer.email;
+          customerName = customerName || customer.name;
+        } catch (err) {
+          // log error se quiser
+        }
+      }
+      const to = process.env.EMAIL_DEV_OVERRIDE || customerEmail;
+      const orderDate = new Date(session.created * 1000).toLocaleString('pt-BR');
+      let total = (session.amount_total / 100).toLocaleString('pt-BR', { style: 'currency', currency: session.currency.toUpperCase() });
+      if (to) {
+        try {
+          await resend.emails.send({
+            from: process.env.EMAIL_FROM || 'no-reply@resend.dev',
+            to,
+            subject: 'Recebemos o seu pedido!',
+            html: `
+              <p>Olá${customerName ? ', ' + customerName : ''}!</p>
+              <p>Recebemos seu pedido e estamos aguardando a confirmação do pagamento. Assim que for aprovado, você receberá um novo e-mail com acesso ao seu conteúdo.</p>
+              <p><b>Total:</b> ${total}</p>
+              <p><b>Data:</b> ${orderDate}</p>
+              <p>Se precisar de ajuda, entre em contato conosco.</p>
+            `,
+          });
+          console.log(`E-mail de confirmação de pedido enviado para: ${to}`);
+        } catch (err) {
+          console.error('Falha ao enviar e-mail de confirmação de pedido:', err);
+        }
+      }
       break;
     }
     default:
