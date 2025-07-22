@@ -28,9 +28,8 @@ async function generateOrderNumber(supabase) {
 }
 
 // Função utilitária para gerar PDF com watermark personalizada
-async function gerarPdfComWatermark(pdfPath, watermarkText) {
-  const existingPdfBytes = fs.readFileSync(pdfPath);
-  const pdfDoc = await PDFDocument.load(existingPdfBytes);
+async function gerarPdfComWatermark(pdfBytes, watermarkText) {
+  const pdfDoc = await PDFDocument.load(pdfBytes);
   const pages = pdfDoc.getPages();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   pages.forEach(page => {
@@ -208,10 +207,15 @@ exports.handler = async (event) => {
 
       // Preparar anexos dos PDFs (com watermark personalizada)
       const attachments = await Promise.all(purchasedBooks.map(async book => {
-        const slug = book.thumb.split('/')[2];
-        const pdfPath = path.join(__dirname, '..', '..', 'public', 'images', slug, 'book.pdf');
+        // Novo: buscar PDF pela URL do metadado 'url' do produto
+        const pdfUrl = book.url || (book.metadata && book.metadata.url);
         let pdfContent = null;
         try {
+          if (!pdfUrl) throw new Error('URL do PDF não encontrada no metadado do produto.');
+          // Baixar PDF do Supabase Storage
+          const axios = require('axios');
+          const response = await axios.get(pdfUrl, { responseType: 'arraybuffer' });
+          const existingPdfBytes = response.data;
           // Buscar CPF do comprador (se disponível)
           let customerCpf = '';
           if (session?.customer_details?.tax_ids?.length > 0) {
@@ -224,11 +228,10 @@ exports.handler = async (event) => {
             customerCpf = paymentIntent.customer_tax_ids[0].value;
           }
           const watermark = `Comprador: ${customerName || ''} | E-mail: ${customerEmail || ''} | CPF: ${customerCpf || ''} | Pedido: ${appId}`;
-          pdfContent = await gerarPdfComWatermark(pdfPath, watermark);
-          console.log('PDF gerado:', pdfPath, pdfContent && pdfContent.length);
-          // fs.writeFileSync(`/tmp/teste-${book.name}.pdf`, pdfContent); // Para teste local
+          pdfContent = await gerarPdfComWatermark(existingPdfBytes, watermark);
+          console.log('PDF baixado e gerado:', pdfUrl, pdfContent && pdfContent.length);
         } catch (err) {
-          console.error('Erro ao gerar PDF com watermark:', pdfPath, err);
+          console.error('Erro ao baixar/gerar PDF com watermark:', pdfUrl, err);
         }
         return pdfContent
           ? {
