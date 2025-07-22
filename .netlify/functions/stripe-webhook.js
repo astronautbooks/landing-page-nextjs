@@ -28,22 +28,33 @@ async function generateOrderNumber(supabase) {
 }
 
 // Função utilitária para gerar PDF com watermark personalizada
-async function gerarPdfComWatermark(pdfPath, watermarkText) {
-  const existingPdfBytes = fs.readFileSync(pdfPath);
-  const pdfDoc = await PDFDocument.load(existingPdfBytes);
-  const pages = pdfDoc.getPages();
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  pages.forEach(page => {
-    page.drawText(watermarkText, {
-      x: 40,
-      y: 20,
-      size: 10,
-      font,
-      color: rgb(0.5, 0.5, 0.5),
-      opacity: 0.7,
+async function gerarPdfComWatermark(pdfUrl, watermarkText) {
+  try {
+    // Baixar o PDF da URL pública
+    const response = await fetch(pdfUrl);
+    if (!response.ok) throw new Error('Falha ao baixar o PDF');
+    
+    const arrayBuffer = await response.arrayBuffer();
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
+    const pages = pdfDoc.getPages();
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    
+    pages.forEach(page => {
+      page.drawText(watermarkText, {
+        x: 40,
+        y: 20,
+        size: 10,
+        font,
+        color: rgb(0.5, 0.5, 0.5),
+        opacity: 0.7,
+      });
     });
-  });
-  return await pdfDoc.save();
+    
+    return await pdfDoc.save();
+  } catch (error) {
+    console.error('Erro ao processar o PDF:', error);
+    return null;
+  }
 }
 
 // Netlify provides the raw body in event.body (as a string)
@@ -208,8 +219,6 @@ exports.handler = async (event) => {
 
       // Preparar anexos dos PDFs (com watermark personalizada)
       const attachments = await Promise.all(purchasedBooks.map(async book => {
-        const slug = book.thumb.split('/')[2];
-        const pdfPath = path.join(__dirname, '..', '..', 'public', 'images', slug, 'book.pdf');
         let pdfContent = null;
         try {
           // Buscar CPF do comprador (se disponível)
@@ -220,16 +229,28 @@ exports.handler = async (event) => {
             customerCpf = session.customer_details.tax_id;
           } else if (session?.customer_details?.tax_id_data?.value) {
             customerCpf = session.customer_details.tax_id_data.value;
-          } else if (paymentIntent && paymentIntent.customer_tax_ids && paymentIntent.customer_tax_ids.length > 0) {
+          } else if (paymentIntent?.customer_tax_ids?.length > 0) {
             customerCpf = paymentIntent.customer_tax_ids[0].value;
           }
+          
           const watermark = `Comprador: ${customerName || ''} | E-mail: ${customerEmail || ''} | CPF: ${customerCpf || ''} | Pedido: ${appId}`;
-          pdfContent = await gerarPdfComWatermark(pdfPath, watermark);
-          console.log('PDF gerado:', pdfPath, pdfContent && pdfContent.length);
-          // fs.writeFileSync(`/tmp/teste-${book.name}.pdf`, pdfContent); // Para teste local
+          
+          // Usar a URL do site para acessar o PDF
+          const baseUrl = process.env.URL || 'http://localhost:3000'; // URL do site
+          const pdfUrl = `${baseUrl}${book.pdf}`;
+          
+          console.log(`Processando PDF: ${pdfUrl}`);
+          pdfContent = await gerarPdfComWatermark(pdfUrl, watermark);
+          
+          if (pdfContent) {
+            console.log(`PDF gerado com sucesso para: ${book.name}`);
+          } else {
+            console.error(`Falha ao gerar PDF para: ${book.name}`);
+          }
         } catch (err) {
-          console.error('Erro ao gerar PDF com watermark:', pdfPath, err);
+          console.error(`Erro ao processar o livro ${book?.name || 'desconhecido'}:`, err);
         }
+        
         return pdfContent
           ? {
               filename: `${book.name}.pdf`,
