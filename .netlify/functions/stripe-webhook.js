@@ -245,15 +245,16 @@ exports.handler = async (event) => {
           : null;
       })).then(arr => arr.filter(Boolean));
 
-      // Montar HTML da lista de produtos (layout profissional)
+      // Montar HTML com links de download para os e-books
       const productsHtml = `
         <div style="background:#f6f6ff;padding:18px 20px;border-radius:8px;margin:24px 0 28px 0;">
-          <p style="margin:0 0 10px 0;">Obrigado por sua compra! Em anexo, você encontra seu(s) e-book(s) em PDF para baixar e imprimir quantas vezes quiser.</p>
+          <p style="margin:0 0 10px 0;">Obrigado por sua compra! Clique nos links abaixo para baixar seu(s) e-book(s) em PDF. Os links são seguros e válidos por tempo limitado.</p>
           <div>
             ${purchasedBooks.map(book => `
               <div style="margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid #ececec;">
                 <div style="font-size:17px;font-weight:600;color:#3730a3;">${book.name}</div>
                 <div style="font-size:14px;color:#666;">${book.description}</div>
+                <a href="${book.metadata.url}" style="display:inline-block;margin-top:10px;padding:10px 15px;background-color:#4f46e5;color:#ffffff;text-decoration:none;border-radius:5px;">Baixar ${book.name}</a>
               </div>
             `).join('')}
           </div>
@@ -265,23 +266,24 @@ exports.handler = async (event) => {
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
           <h1 style="color:#4f46e5;font-size:28px;margin-bottom:18px;">Seu e-book chegou!</h1>
           <p style="font-size:16px;">Olá, <b>${customerName || ''}</b>!</p>
+          <p style="font-size:16px;">Seu pagamento foi aprovado com sucesso. Agora você já pode acessar seu conteúdo.</p>
           ${productsHtml}
           <p style="font-size:15px;">Se tiver qualquer dúvida ou problema, basta responder este e-mail.<br>Boa leitura e ótimas cores! 🌈</p>
           <div style="color:#aaa;font-size:13px;margin-top:32px;">Equipe Astronaut</div>
         </div>
       `;
 
-      // Enviar o e-mail de entrega
+      // Enviar o e-mail de entrega com links, sem anexos
       try {
         await resend.emails.send({
           from: process.env.EMAIL_FROM || 'no-reply@resend.dev',
           to: customerEmail,
           subject: 'Seu e-book está aqui! 📚',
           html: deliveryHtml,
-          attachments: attachments,
         });
+        console.log(`E-mail de entrega com links enviado para: ${customerEmail}`);
       } catch (err) {
-        console.error('Erro ao enviar e-mail de entrega:', err);
+        console.error('Falha CRÍTICA ao enviar e-mail de entrega com links:', err);
       }
 
       break;
@@ -420,64 +422,7 @@ exports.handler = async (event) => {
     }
     case 'checkout.session.completed': {
       console.log('*** CHECKOUT SESSION COMPLETED ***');
-      // Gera um número amigável único para o app_id
-      let unique = false;
-      let appId;
-      while (!unique) {
-        appId = Math.floor(100000 + Math.random() * 900000).toString(); // 6 dígitos
-        const { data } = await supabase
-          .from('payments')
-          .select('id')
-          .eq('app_id', appId)
-          .single();
-        if (!data) unique = true;
-      }
-      // Grava na tabela payments: app_id e stripe_id (payment_intent)
-      await supabase
-        .from('payments')
-        .insert([
-          {
-            app_id: appId,
-            stripe_id: stripeEvent.data.object.payment_intent,
-          }
-        ]);
-
-      // Envio de e-mail de confirmação (melhorado)
-      const session = stripeEvent.data.object;
-      let customerEmail = session.customer_details?.email || session.customer_email;
-      let customerName = session.customer_details?.name || '';
-      if ((!customerEmail || !customerName) && session.customer) {
-        try {
-          const customer = await stripe.customers.retrieve(session.customer);
-          customerEmail = customerEmail || customer.email;
-          customerName = customerName || customer.name;
-        } catch (err) {
-          // log error se quiser
-        }
-      }
-      // Forçar envio para e-mail de desenvolvimento, se definido
-      const to = process.env.EMAIL_DEV_OVERRIDE || customerEmail;
-      const orderDate = new Date(session.created * 1000).toLocaleString('pt-BR');
-      let total = (session.amount_total / 100).toLocaleString('pt-BR', { style: 'currency', currency: session.currency.toUpperCase() });
-      if (to) {
-        try {
-          await resend.emails.send({
-            from: process.env.EMAIL_FROM || 'no-reply@resend.dev',
-            to,
-            subject: 'Recebemos o seu pedido!',
-            html: `
-              <p>Olá${customerName ? ', ' + customerName : ''}!</p>
-              <p>Recebemos seu pedido e estamos processando.</p>
-              <p><b>Total:</b> ${total}</p>
-              <p><b>Número do pedido:</b> ${appId}</p>
-              <p><b>Data:</b> ${orderDate}</p>
-              <p>Se precisar de ajuda, entre em contato conosco.</p>
-            `,
-          });
-        } catch (err) {
-          // Silencie erros de e-mail
-        }
-      }
+      // Apenas registra o evento, a lógica principal foi movida para 'payment_intent.succeeded'
       break;
     }
     default:
