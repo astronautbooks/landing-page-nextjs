@@ -195,74 +195,88 @@ exports.handler = async (event) => {
       const purchasedBooks = lineItems.map(item => {
         const book = books.find(b => b.priceId === item.price.id);
         if (!book) return null;
-        // Caminhos dos arquivos
         const slug = book.metadata?.slug || book.name.toLowerCase().replace(/ /g, '-');
         const thumb = `/images/${slug}/cover-thumb.png`;
         return {
           name: book.name,
           description: book.description,
           thumb,
-          metadata: book.metadata, // Corrigido: Passar metadados para o objeto do livro comprado
+          metadata: book.metadata,
         };
       }).filter(Boolean);
 
-      // Preparar anexos dos PDFs (com watermark personalizada)
-      const attachments = await Promise.all(purchasedBooks.map(async book => {
-        // Novo: buscar PDF pela URL do metadado 'url' do produto
-        const pdfUrl = book.metadata?.url;
-        let pdfContent = null;
+      // NOVO FLUXO: Gerar PDFs com marca d'água, fazer upload e obter links seguros
+      const deliveryItems = await Promise.all(purchasedBooks.map(async book => {
         try {
-          if (!pdfUrl) {
-            const errorMessage = `URL do PDF não encontrada no metadado do produto: ${book.name}`;
-            console.error(errorMessage);
-            throw new Error(errorMessage);
+          const originalPdfUrl = book.metadata?.url;
+          if (!originalPdfUrl) {
+            throw new Error(`URL do PDF original não encontrada para o livro: ${book.name}`);
           }
-          // Baixar PDF do Supabase Storage
-          const axios = require('axios');
-          const response = await axios.get(pdfUrl, { responseType: 'arraybuffer' });
-          const existingPdfBytes = response.data;
-          // Buscar CPF do comprador (se disponível)
-          let customerCpf = '';
-          if (session?.customer_details?.tax_ids?.length > 0) {
-            customerCpf = session.customer_details.tax_ids[0].value;
-          } else if (session?.customer_details?.tax_id) {
-            customerCpf = session.customer_details.tax_id;
-          } else if (session?.customer_details?.tax_id_data?.value) {
-            customerCpf = session.customer_details.tax_id_data.value;
-          } else if (paymentIntent && paymentIntent.customer_tax_ids && paymentIntent.customer_tax_ids.length > 0) {
-            customerCpf = paymentIntent.customer_tax_ids[0].value;
-          }
-          const watermark = `Comprador: ${customerName || ''} | E-mail: ${customerEmail || ''} | CPF: ${customerCpf || ''} | Pedido: ${appId}`;
-          pdfContent = await gerarPdfComWatermark(existingPdfBytes, watermark);
-          console.log('PDF baixado e gerado:', pdfUrl, pdfContent && pdfContent.length);
-        } catch (err) {
-          console.error(`Erro ao baixar/gerar PDF com watermark para o livro "${book.name}":`, err.message);
-        }
-        return pdfContent
-          ? {
-              filename: `${book.name}.pdf`,
-              content: Buffer.from(pdfContent),
-              contentType: 'application/pdf'
-            }
-          : null;
-      })).then(arr => arr.filter(Boolean));
 
-      // Montar HTML com links de download para os e-books
+          // 1. Baixar o PDF original
+          const axios = require('axios');
+          const response = await axios.get(originalPdfUrl, { responseType: 'arraybuffer' });
+          const originalPdfBytes = response.data;
+
+          // 2. Aplicar a marca d'água
+          const watermarkText = `Comprador: ${customerName || ''} | E-mail: ${customerEmail || ''} | Pedido: ${appId}`;
+          const watermarkedPdfBytes = await gerarPdfComWatermark(originalPdfBytes, watermarkText);
+
+          // 3. Fazer upload do PDF modificado
+          const newPdfPath = `watermarked-pdfs/${appId}-${book.name.replace(/\s+/g, '_')}.pdf`;
+          const { error: uploadError } = await supabase.storage
+            .from('astronautbooks-pdfs') // Assumindo que o bucket é 'astronautbooks-pdfs'
+            .upload(newPdfPath, watermarkedPdfBytes, {
+              contentType: 'application/pdf',
+              upsert: true,
+            });
+
+          if (uploadError) {
+            throw new Error(`Falha no upload do PDF com marca d'água: ${uploadError.message}`);
+          }
+
+          // 4. Gerar um link de download seguro
+          const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+            .from('astronautbooks-pdfs')
+            .createSignedUrl(newPdfPath, 60 * 60 * 24 * 7); // Link válido por 7 dias
+
+          if (signedUrlError) {
+            throw new Error(`Falha ao criar URL assinada: ${signedUrlError.message}`);
+          }
+          
+          console.log(`PDF com marca d'água gerado e link criado para: ${book.name}`);
+          return {
+            ...book,
+            downloadUrl: signedUrlData.signedUrl,
+          };
+
+        } catch (err) {
+          console.error(`Falha no processamento do livro "${book.name}":`, err.message);
+          return null; // Retorna nulo para filtrar depois
+        }
+      })).then(items => items.filter(Boolean));
+
+      if (deliveryItems.length === 0) {
+        console.error("Nenhum item de entrega foi gerado com sucesso. Abortando envio de e-mail.");
+        break;
+      }
+
+      // Montar HTML com os links de download seguros
       const productsHtml = `
         <div style="background:#f6f6ff;padding:18px 20px;border-radius:8px;margin:24px 0 28px 0;">
           <p style="margin:0 0 10px 0;">Obrigado por sua compra! Clique nos links abaixo para baixar seu(s) e-book(s) em PDF. Os links são seguros e válidos por tempo limitado.</p>
           <div>
-            ${purchasedBooks.map(book => `
+            ${deliveryItems.map(book => `
               <div style="margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid #ececec;">
                 <div style="font-size:17px;font-weight:600;color:#3730a3;">${book.name}</div>
                 <div style="font-size:14px;color:#666;">${book.description}</div>
-                <a href="${book.metadata.url}" style="display:inline-block;margin-top:10px;padding:10px 15px;background-color:#4f46e5;color:#ffffff;text-decoration:none;border-radius:5px;">Baixar ${book.name}</a>
+                <a href="${book.downloadUrl}" style="display:inline-block;margin-top:10px;padding:10px 15px;background-color:#4f46e5;color:#ffffff;text-decoration:none;border-radius:5px;">Baixar ${book.name}</a>
               </div>
             `).join('')}
           </div>
         </div>
       `;
-
+      
       // Montar corpo do e-mail de entrega
       const deliveryHtml = `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
