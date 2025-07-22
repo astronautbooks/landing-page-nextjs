@@ -73,13 +73,13 @@ exports.handler = async (event) => {
     case 'payment_intent.succeeded': {
       console.log('*** PAYMENT_INTENT SUCCEEDED ***');
 
-      // Delay de 5 segundos para garantir que o registro já foi criado
+      // Delay para garantir que o registro em 'payments' foi criado pelo evento 'checkout.session.completed'
       await new Promise(resolve => setTimeout(resolve, 8000));
       const paymentIntent = stripeEvent.data.object;
       const paymentIntentId = paymentIntent.id;
 
-      // Buscar o app_id correspondente ao payment_intent
-      let appId = paymentIntentId;
+      // Buscar o app_id amigável correspondente ao payment_intent
+      let appId = paymentIntentId; // Fallback para o ID do Stripe
       const { data: paymentRow } = await supabase
         .from('payments')
         .select('app_id')
@@ -87,6 +87,8 @@ exports.handler = async (event) => {
         .single();
       if (paymentRow && paymentRow.app_id) {
         appId = paymentRow.app_id;
+      } else {
+        console.warn(`Não foi encontrado um app_id amigável para o payment_intent: ${paymentIntentId}`);
       }
 
       let customerEmail = paymentIntent.receipt_email || paymentIntent.charges?.data?.[0]?.billing_details?.email || paymentIntent.customer_email;
@@ -261,24 +263,24 @@ exports.handler = async (event) => {
         </div>
       `;
 
-      // Montar corpo do e-mail de entrega (layout profissional)
+      // Montar corpo do e-mail de entrega
       const deliveryHtml = `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
           <h1 style="color:#4f46e5;font-size:28px;margin-bottom:18px;">Seu e-book chegou!</h1>
           <p style="font-size:16px;">Olá, <b>${customerName || ''}</b>!</p>
-          <p style="font-size:16px;">Seu pagamento foi aprovado com sucesso. Agora você já pode acessar seu conteúdo.</p>
+          <p style="font-size:16px;">Seu pagamento para o pedido <b>#${appId}</b> foi aprovado com sucesso. Agora você já pode acessar seu conteúdo.</p>
           ${productsHtml}
           <p style="font-size:15px;">Se tiver qualquer dúvida ou problema, basta responder este e-mail.<br>Boa leitura e ótimas cores! 🌈</p>
           <div style="color:#aaa;font-size:13px;margin-top:32px;">Equipe Astronaut</div>
         </div>
       `;
 
-      // Enviar o e-mail de entrega com links, sem anexos
+      // Enviar o e-mail de entrega com links
       try {
         await resend.emails.send({
           from: process.env.EMAIL_FROM || 'no-reply@resend.dev',
           to: customerEmail,
-          subject: 'Seu e-book está aqui! 📚',
+          subject: `Seu e-book está aqui! (Pedido #${appId})`,
           html: deliveryHtml,
         });
         console.log(`E-mail de entrega com links enviado para: ${customerEmail}`);
@@ -422,8 +424,30 @@ exports.handler = async (event) => {
     }
     case 'checkout.session.completed': {
       console.log('*** CHECKOUT SESSION COMPLETED ***');
-      // Envio de e-mail de confirmação de que o pedido foi recebido
+      // Gera um número de pedido amigável, salva no DB e envia e-mail de confirmação.
       const session = stripeEvent.data.object;
+
+      // 1. Gerar número de pedido amigável
+      let appId;
+      try {
+        appId = await generateOrderNumber(supabase);
+      } catch(err) {
+        console.error("Falha ao gerar número de pedido:", err);
+        // Fallback ou tratamento de erro
+        return { statusCode: 500, body: 'Falha ao gerar número de pedido.' };
+      }
+      
+      // 2. Gravar na tabela 'payments' para ligar o pedido ao payment_intent
+      await supabase
+        .from('payments')
+        .insert([
+          {
+            app_id: appId,
+            stripe_id: session.payment_intent,
+          }
+        ]);
+
+      // 3. Enviar e-mail de confirmação de pedido recebido
       let customerEmail = session.customer_details?.email || session.customer_email;
       let customerName = session.customer_details?.name || '';
       if ((!customerEmail || !customerName) && session.customer) {
@@ -431,30 +455,29 @@ exports.handler = async (event) => {
           const customer = await stripe.customers.retrieve(session.customer);
           customerEmail = customerEmail || customer.email;
           customerName = customerName || customer.name;
-        } catch (err) {
-          // log error se quiser
-        }
+        } catch (err) { /* Ignorar erro */ }
       }
       const to = process.env.EMAIL_DEV_OVERRIDE || customerEmail;
       const orderDate = new Date(session.created * 1000).toLocaleString('pt-BR');
       let total = (session.amount_total / 100).toLocaleString('pt-BR', { style: 'currency', currency: session.currency.toUpperCase() });
+      
       if (to) {
         try {
           await resend.emails.send({
             from: process.env.EMAIL_FROM || 'no-reply@resend.dev',
             to,
-            subject: 'Recebemos o seu pedido!',
+            subject: `Recebemos seu pedido #${appId}`,
             html: `
               <p>Olá${customerName ? ', ' + customerName : ''}!</p>
-              <p>Recebemos seu pedido e estamos aguardando a confirmação do pagamento. Assim que for aprovado, você receberá um novo e-mail com acesso ao seu conteúdo.</p>
+              <p>Recebemos seu pedido <b>#${appId}</b> e estamos aguardando a confirmação do pagamento. Assim que for aprovado, você receberá um novo e-mail com acesso ao seu conteúdo.</p>
               <p><b>Total:</b> ${total}</p>
               <p><b>Data:</b> ${orderDate}</p>
               <p>Se precisar de ajuda, entre em contato conosco.</p>
             `,
           });
-          console.log(`E-mail de confirmação de pedido enviado para: ${to}`);
+          console.log(`E-mail de confirmação de pedido #${appId} enviado para: ${to}`);
         } catch (err) {
-          console.error('Falha ao enviar e-mail de confirmação de pedido:', err);
+          console.error(`Falha ao enviar e-mail de confirmação para o pedido #${appId}:`, err);
         }
       }
       break;
