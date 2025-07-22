@@ -92,6 +92,7 @@ exports.handler = async (event) => {
         console.warn(`Não foi encontrado um app_id amigável para o payment_intent: ${paymentIntentId}`);
       }
 
+      // Buscar dados do cliente
       let customerEmail = paymentIntent.receipt_email || paymentIntent.charges?.data?.[0]?.billing_details?.email || paymentIntent.customer_email;
       let customerName = paymentIntent.charges?.data?.[0]?.billing_details?.name || '';
       if ((!customerEmail || !customerName) && paymentIntent.customer) {
@@ -101,22 +102,27 @@ exports.handler = async (event) => {
           customerName = customerName || customer.name;
         } catch (err) {}
       }
-      let paymentMethod = paymentIntent.charges?.data?.[0]?.payment_method_details?.type || '';
-      let cardLast4 = paymentIntent.charges?.data?.[0]?.payment_method_details?.card?.last4 || '';
-      let boletoUrl = paymentIntent.charges?.data?.[0]?.payment_method_details?.boleto?.url || '';
-      let pixInfo = paymentIntent.charges?.data?.[0]?.payment_method_details?.pix || null;
+      
+      // Corrigido: Buscar detalhes do método de pagamento via API
+      let paymentDetailsText = 'Não informado';
+      if (paymentIntent.payment_method) {
+        try {
+          const paymentMethod = await stripe.paymentMethods.retrieve(paymentIntent.payment_method);
+          if (paymentMethod.type === 'card' && paymentMethod.card) {
+            const brand = paymentMethod.card.brand.charAt(0).toUpperCase() + paymentMethod.card.brand.slice(1);
+            paymentDetailsText = `${brand} final ${paymentMethod.card.last4}`;
+          } else if (paymentMethod.type === 'boleto') {
+            paymentDetailsText = 'Boleto bancário';
+          } else if (paymentMethod.type === 'pix') {
+            paymentDetailsText = 'Pix';
+          }
+        } catch (err) {
+          console.error(`Erro ao buscar detalhes do método de pagamento ${paymentIntent.payment_method}:`, err.message);
+        }
+      }
+
       let amount = (paymentIntent.amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: paymentIntent.currency.toUpperCase() });
       let orderDate = new Date(paymentIntent.created * 1000).toLocaleString('pt-BR');
-      let paymentDetails = '';
-      if (paymentMethod === 'card') {
-        paymentDetails = `Cartão de crédito final ${cardLast4}`;
-      } else if (paymentMethod === 'boleto') {
-        paymentDetails = `Boleto bancário <a href="${boletoUrl}">Ver boleto</a>`;
-      } else if (paymentMethod === 'pix') {
-        paymentDetails = `Pix`;
-      } else {
-        paymentDetails = paymentMethod;
-      }
       if (customerEmail) {
         try {
           await resend.emails.send({
@@ -128,7 +134,7 @@ exports.handler = async (event) => {
               <p>Seu pagamento foi aprovado!</p>
               <ul>
                 <li><b>Valor:</b> ${amount}</li>
-                <li><b>Método de pagamento:</b> ${paymentDetails}</li>
+                <li><b>Método de pagamento:</b> ${paymentDetailsText}</li>
                 <li><b>Número do pedido:</b> ${appId}</li>
                 <li><b>Data:</b> ${orderDate}</li>
               </ul>
@@ -284,6 +290,7 @@ exports.handler = async (event) => {
           <h1 style="color:#4f46e5;font-size:28px;margin-bottom:18px;">Seu e-book chegou!</h1>
           <p style="font-size:16px;">Olá, <b>${customerName || ''}</b>!</p>
           <p style="font-size:16px;">Seu pagamento para o pedido <b>#${appId}</b> foi aprovado com sucesso. Agora você já pode acessar seu conteúdo.</p>
+          <p style="font-size:15px;"><b>Método de pagamento:</b> ${paymentDetailsText}</p>
           ${productsHtml}
           <p style="font-size:15px;">Se tiver qualquer dúvida ou problema, basta responder este e-mail.<br>Boa leitura e ótimas cores! 🌈</p>
           <div style="color:#aaa;font-size:13px;margin-top:32px;">Equipe Astronaut</div>
