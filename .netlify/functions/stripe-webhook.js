@@ -33,13 +33,14 @@ async function gerarPdfComWatermark(pdfBytes, watermarkText) {
   const pages = pdfDoc.getPages();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   pages.forEach(page => {
+    const { width, height } = page.getSize();
     page.drawText(watermarkText, {
       x: 40,
-      y: 20,
+      y: height - 30, // Posiciona a marca d'água no topo da página
       size: 10,
       font,
       color: rgb(0.5, 0.5, 0.5),
-      opacity: 0.7,
+      opacity: 0.8,
     });
   });
   return await pdfDoc.save();
