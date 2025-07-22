@@ -196,22 +196,25 @@ exports.handler = async (event) => {
         // Caminhos dos arquivos
         const slug = book.metadata?.slug || book.name.toLowerCase().replace(/ /g, '-');
         const thumb = `/images/${slug}/cover-thumb.png`;
-        const pdf = `/images/${slug}/book.pdf`;
         return {
           name: book.name,
           description: book.description,
           thumb,
-          pdf,
+          metadata: book.metadata, // Corrigido: Passar metadados para o objeto do livro comprado
         };
       }).filter(Boolean);
 
       // Preparar anexos dos PDFs (com watermark personalizada)
       const attachments = await Promise.all(purchasedBooks.map(async book => {
         // Novo: buscar PDF pela URL do metadado 'url' do produto
-        const pdfUrl = book.url || (book.metadata && book.metadata.url);
+        const pdfUrl = book.metadata?.url;
         let pdfContent = null;
         try {
-          if (!pdfUrl) throw new Error('URL do PDF não encontrada no metadado do produto.');
+          if (!pdfUrl) {
+            const errorMessage = `URL do PDF não encontrada no metadado do produto: ${book.name}`;
+            console.error(errorMessage);
+            throw new Error(errorMessage);
+          }
           // Baixar PDF do Supabase Storage
           const axios = require('axios');
           const response = await axios.get(pdfUrl, { responseType: 'arraybuffer' });
@@ -231,7 +234,7 @@ exports.handler = async (event) => {
           pdfContent = await gerarPdfComWatermark(existingPdfBytes, watermark);
           console.log('PDF baixado e gerado:', pdfUrl, pdfContent && pdfContent.length);
         } catch (err) {
-          console.error('Erro ao baixar/gerar PDF com watermark:', pdfUrl, err);
+          console.error(`Erro ao baixar/gerar PDF com watermark para o livro "${book.name}":`, err.message);
         }
         return pdfContent
           ? {
