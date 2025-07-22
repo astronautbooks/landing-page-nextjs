@@ -16,7 +16,7 @@ const montserrat = Montserrat({
 const fontClass = montserrat.variable;
 
 export const metadata = {
-  title: "LeiaMais - E-books Premium",
+  title: "AstronautBooks - E-books Premium",
   description: "Descubra nossa coleção premium de e-books para transformar seu conhecimento em resultados.",
 };
 
