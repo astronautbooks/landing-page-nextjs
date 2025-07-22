@@ -40,7 +40,7 @@ async function gerarPdfComWatermark(pdfBytes, watermarkText) {
       size: 10,
       font,
       color: rgb(0.5, 0.5, 0.5),
-      opacity: 0.8,
+      opacity: 0.7,
     });
   });
   return await pdfDoc.save();
