@@ -54,7 +54,7 @@ export default function HomeClient({ books }) {
             <div className="absolute w-96 h-96 bg-white bg-opacity-20 rounded-full blur-[100px] z-0"></div>
             {/* Imagem estática da colagem */}
             <Image
-              src="/images/collage3.png"
+              src="/images/collage.png"
               alt="Coleção de Livros de Colorir"
               width={640}
               height={480}
