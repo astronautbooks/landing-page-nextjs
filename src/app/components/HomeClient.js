@@ -4,6 +4,7 @@ import BookCard from './BookCard';
 import CartIcon from './CartIcon';
 import CartDrawer from './CartDrawer';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function HomeClient({ books }) {
   const [cartOpen, setCartOpen] = useState(false);
@@ -39,25 +40,26 @@ export default function HomeClient({ books }) {
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white py-20">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
+      <section className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+        <div className="container mx-auto px-4 py-10 flex flex-col md:flex-row items-center">
           <div className="md:w-3/5 mb-10 md:mb-0">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Solte a Imaginação com Nossos Livros de <span className="text-yellow-300">Colorir</span> Infantis!</h1>
-            <p className="text-xl mb-8 opacity-90">Dezenas de desenhos encantadores, prontos para serem transformados em obras de arte pelos pequenos artistas.</p>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">Leve a <span className="text-yellow-300">Coleção Completa</span> de Livros de Colorir!</h1>
+            <p className="text-xl mb-8 opacity-90">Três aventuras incríveis para estimular a criatividade das crianças. Aproveite a oferta especial da coleção!</p>
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-              <a href="#ebooks" className="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300 text-center shadow-lg">Quero Colorir Agora!</a>
+              <a href="#ebooks" className="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300 text-center shadow-lg">Quero a coleção!</a>
             </div>
           </div>
           <div className="md:w-2/5 flex justify-center items-center relative">
             {/* Efeito de Glow */}
             <div className="absolute w-96 h-96 bg-white bg-opacity-20 rounded-full blur-[100px] z-0"></div>
-            {/* Carousel with book covers in Hero Section */}
-            <Carousel
-              images={books.slice(0, 3).map(book => ({
-                src: book.metadata && book.metadata.cover ? book.metadata.cover : "/images/sample-book.png",
-                alt: book.name || book.title
-              }))}
-              extraClassName="rounded-lg h-96 w-auto relative z-10 border border-white border-opacity-75"
+            {/* Imagem estática da colagem */}
+            <Image
+              src="/images/collage3.png"
+              alt="Coleção de Livros de Colorir"
+              width={640}
+              height={480}
+              priority
+              className="drop-shadow-xl relative z-10 rounded-lg"
             />
           </div>
         </div>
