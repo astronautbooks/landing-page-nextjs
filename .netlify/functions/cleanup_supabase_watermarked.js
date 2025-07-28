@@ -7,11 +7,16 @@ const FOLDER = 'watermarked-pdfs/';
 const DAYS_TO_KEEP = 7;
 
 exports.handler = async (event, context) => {
-  console.log('Iniciando limpeza de arquivos supabase');
+  console.error('🚀 INICIANDO LIMPEZA DE ARQUIVOS SUPABASE');
+  console.error('📅 Data/Hora:', new Date().toISOString());
+  console.error('🔧 Verificando variáveis de ambiente...');
+  
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    console.error('Defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no ambiente.');
+    console.error('❌ ERRO: SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY não definidas');
     return { statusCode: 500, body: 'Configuração ausente.' };
   }
+  
+  console.log('✅ Variáveis de ambiente OK');
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -40,13 +45,11 @@ exports.handler = async (event, context) => {
         console.log(`Deletado: ${name} (idade: ${age_days} dias)`);
         deleted++;
       }
-    } else {
-      console.log(`Não deletado: ${name} (idade: ${age_days} dias)`);
     }
   }
   return { statusCode: 200, body: `Limpeza concluída. ${deleted} arquivos deletados.` };
 };
 
 exports.config = {
-  schedule: "0 3 * * *", // todo dia às 3h da manhã (UTC)
+  schedule: "@daily" // todo dia às 3h da manhã (UTC)
 };
