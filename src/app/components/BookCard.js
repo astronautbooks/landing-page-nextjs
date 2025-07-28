@@ -43,27 +43,10 @@ export default function BookCard({ book }) {
   const pages = book.metadata?.pages || '';
   // Slug para buscar o PDF
   const slug = book.metadata?.slug || title.toLowerCase().replace(/ /g, '-');
-  // Estado para o tamanho real do PDF
-  const [pdfSize, setPdfSize] = useState('...');
-
-  useEffect(() => {
-    async function fetchPdfSize() {
-      try {
-        const res = await fetch(`/.netlify/functions/get-pdf-size?slug=${slug}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.size) {
-            // Formatar para MB ou KB
-            const mb = data.size / (1024 * 1024);
-            setPdfSize(mb >= 1 ? `${mb.toFixed(2)} MB` : `${(data.size / 1024).toFixed(0)} KB`);
-          }
-        }
-      } catch (err) {
-        setPdfSize('N/A');
-      }
-    }
-    fetchPdfSize();
-  }, [slug]);
+  // Novo: tamanho do PDF via metadado
+  const pdfSize = book.metadata?.size
+    ? `${Number(book.metadata.size).toFixed(2)} MB`
+    : 'N/A';
 
   // Função para animar a imagem da capa até o carrinho
   function animateFlyToCart() {
@@ -111,17 +94,17 @@ export default function BookCard({ book }) {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-[0_4px_24px_rgba(67,56,202,0.12)] p-4 flex flex-col items-stretch w-64 h-full border border-gray-200 cursor-pointer transition hover:shadow-lg" onClick={() => setShowModal(true)}>
+    <div className="bg-white rounded-md shadow-[0_4px_24px_rgba(67,56,202,0.12)] p-2 flex flex-col items-stretch w-56 h-full border border-gray-200 cursor-pointer transition hover:shadow-lg" onClick={() => setShowModal(true)}>
       {/* Imagem da capa */}
-      <div className="flex justify-center items-center mb-3 h-56">
+      <div className="flex justify-center items-center w-full h-full mb-2">
         <img
           src={getImgPath(images[0])}
           alt={title}
-          className="w-40 h-56 object-cover"
+          className="w-full h-full object-cover"
         />
       </div>
       {/* Título (duas linhas, truncado) */}
-      <div className="text-base text-gray-900 mb-2 text-center w-full line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{title}</div>
+      <div className="text-sm text-gray-900 mb-2 text-center w-full line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{title}</div>
       {/* Preço */}
       <div className="flex items-center justify-center mb-2 w-full">
         {(() => {
@@ -155,7 +138,7 @@ export default function BookCard({ book }) {
             <img
               src={getImgPath(images[modalIdx])}
               alt={`Página ${modalIdx + 1}`}
-              className="w-50 h-72 object-cover mb-4 shadow"
+              className="w-50 h-72 object-cover mb-4"
             />
             {/* Thumbnails centralizados */}
             <div className="flex space-x-2 mb-4 justify-center">

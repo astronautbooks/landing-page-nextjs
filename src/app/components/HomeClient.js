@@ -54,7 +54,7 @@ export default function HomeClient({ books }) {
             <div className="absolute w-96 h-96 bg-white bg-opacity-20 rounded-full blur-[100px] z-0"></div>
             {/* Imagem estática da colagem */}
             <Image
-              src="/images/collage.png"
+              src="/images/collage2.png"
               alt="Coleção de Livros de Colorir"
               width={640}
               height={480}
@@ -86,7 +86,7 @@ export default function HomeClient({ books }) {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-4">Veja o Livro por <span className="text-indigo-600">Dentro</span></h2>
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Escolha a melhor opção para você e comece a colorir hoje mesmo.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 justify-center items-stretch mx-auto max-w-fit">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center items-stretch mx-auto max-w-fit">
             {books.map((book, idx) => {
               // Adapte aqui para promoções se necessário
               return <BookCard key={book.id} book={book} />;
