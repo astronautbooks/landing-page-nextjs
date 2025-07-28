@@ -1,2 +1,5 @@
 [functions]
 directory = ".netlify/functions" 
+
+[functions."cleanup_supabase_watermarked"]
+schedule = "@daily"
